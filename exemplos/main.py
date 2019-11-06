@@ -33,13 +33,16 @@ def frange(start, stop=None, step=None):
 def proj(ang, idx):
     #d=p[1]
 
+    ang=float(ang)
+    c=math.cos(ang) 
+
     pygame.draw.line(screen, h_color,
-            (int(player[0]+(math.cos(player[2]+float(ang)))*distance),
-            int(player[1]+(math.sin(player[2]+float(ang))*distance))),
+            (int(player[0]+(math.cos(player[2]+float(ang)))*distance/c),
+            int(player[1]+(math.sin(player[2]+float(ang))*distance/c))),
             (int(player[0]),int(player[1])))
 
-    y =  player[1]+(math.sin(player[2]+float(ang))*distance)
-    x =  player[0]+(math.cos(player[2]+float(ang))*distance)
+    y =  player[1]+(math.sin(player[2]+float(ang))*distance/c)
+    x =  player[0]+(math.cos(player[2]+float(ang))*distance/c)
     
     r=1000
 
