@@ -15,6 +15,10 @@
 
 #define LOGIN_MAX_SIZE 20
 
+#define MSG_MAX_SIZE 350
+#define BUFFER_SIZE (MSG_MAX_SIZE + 100)
+#define HIST_MAX_SIZE 200
+
 enum conn_ret_t tryConnect() {
   char server_ip[30];
   printf("Please enter the server IP: ");
@@ -22,6 +26,12 @@ enum conn_ret_t tryConnect() {
   getchar();
   return connectToServer(server_ip);
   
+}
+
+void rodar_jogo() {
+
+  char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
+  int ret = recvMsgFromServer(str_buffer, DONT_WAIT);
 }
 
 void assertConnection() {
@@ -114,6 +124,7 @@ int main(void)
       break;
     }
  
+    rodar_jogo();
     al_draw_filled_circle(350.0, 50.0, 43.0, al_map_rgb(0, 0, 255));
     al_flip_display();
   }
