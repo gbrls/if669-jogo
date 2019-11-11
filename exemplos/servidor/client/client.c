@@ -170,7 +170,7 @@ int main(){
         for(int i=0;i<MAX_CHAT_CLIENTS;i++){
           if(players[i].active){
             al_draw_circle(players[i].playerState.x, players[i].playerState.y,
-            10.0f, al_map_rgb(255/(i*10+1), 255 - 255/(i*10+1), 255),10.0f);
+            10.0f, al_map_rgb(rand()%256, rand()%256, rand()%256),10.0f);
           }
         }
 
