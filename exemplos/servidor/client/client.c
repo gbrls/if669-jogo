@@ -11,10 +11,6 @@
 #include <allegro5/allegro_primitives.h>
 #include <string.h>
 
-#define mapWidth 900
-#define mapHeight 900
-#define WIDTH 800
-#define HEIGHT 800
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
@@ -56,9 +52,12 @@ void assertConnection() {
     ans = tryConnect();
   }
   char login[LOGIN_MAX_SIZE + 4];
-  printf("Please enter your login (limit = %d): ", LOGIN_MAX_SIZE);
-  scanf(" %[^\n]", login);
-  getchar();
+  ///printf("Please enter your login (limit = %d): ", LOGIN_MAX_SIZE);
+  ///scanf(" %[^\n]", login);
+  ///getchar();
+  for(int i=0;i<LOGIN_MAX_SIZE;i++){
+    login[i]=rand()%256;
+  }
   int len = (int)strlen(login);
   sendMsgToServer(login, len + 1);
 }
@@ -79,7 +78,7 @@ int inicializar() {
         return 0;
     }
 
-    window = al_create_display(WIDTH, mapHeight);
+    window = al_create_display(WIDTH, HEIGHT);
     if(!window){
         printf("Falha ao criar janela\n");
         return 0;
@@ -102,6 +101,7 @@ ALLEGRO_COLOR colors[MAX_CHAT_CLIENTS];
 
 int main(){
 
+    srand(time(NULL));
     assertConnection();
 
     
@@ -158,16 +158,11 @@ int main(){
 
         ClientState players[MAX_CHAT_CLIENTS];
         int ret = recvMsgFromServer(players, DONT_WAIT);
-        if(ret == NO_MESSAGE) {
-          //puts("NO MESSAGE");
-          //printf("%0.2lf\n",al_get_time());
-        } else {
-          //printf("(%d), Recieved %d bytes, %d players\n",time(NULL),ret, ret/sizeof(ClientState));
-          char* ptr = (char*) players;
 
-          for(int i=0;i<ret;i++){
-            //printf("%x%c",ptr[i],i==ret-1?'\n':' ');
-          }
+        if(ret == NO_MESSAGE) {
+
+        } else {
+
         }
 
         al_clear_to_color(al_map_rgb(0,0,0));
@@ -175,7 +170,7 @@ int main(){
         for(int i=0;i<MAX_CHAT_CLIENTS;i++){
           if(players[i].active){
             al_draw_circle(players[i].playerState.x, players[i].playerState.y,
-            10.0f, al_map_rgb(255*(i%2), 255*(i+1%2),255),10.0f);
+            10.0f, al_map_rgb(255/(i*10+1), 255 - 255/(i*10+1), 255),10.0f);
           }
         }
 

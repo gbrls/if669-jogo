@@ -3,6 +3,9 @@
 
 #define MAX_CHAT_CLIENTS 5
 
+#define WIDTH 800
+#define HEIGHT 800
+
 typedef struct {
     float x;
     float y;

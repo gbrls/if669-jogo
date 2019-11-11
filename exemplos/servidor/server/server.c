@@ -37,18 +37,40 @@ unsigned char process_byte(unsigned char prev, unsigned char new){
 void update_players() {
     for(int i=0;isValidId(i);i++){
         if(clients[i].active){
-          float spd=0.2;
-          if(clients[i].keyboard&KEY_BYTE_L) clients[i].playerState.x -= spd;
-          if(clients[i].keyboard&KEY_BYTE_R) clients[i].playerState.x += spd;
-          if(clients[i].keyboard&KEY_BYTE_U) clients[i].playerState.y -= spd;
-          if(clients[i].keyboard&KEY_BYTE_D) clients[i].playerState.y += spd;
-        }
-                        //printf("Player %d, at (%0.2f, %0.2f)\n",i,
-                //clients[i].playerState.x,
-                //clients[i].playerState.y);
 
-          //sendMsgToClient(clients, sizeof(ClientState)*MAX_CHAT_CLIENTS, i);
-        
+          float spd=0.2;
+          if(clients[i].keyboard&KEY_BYTE_L) {
+              if(clients[i].playerState.x-spd>0) {
+                  clients[i].playerState.x -= spd;
+              }
+          }
+          if(clients[i].keyboard&KEY_BYTE_R) {
+              if(clients[i].playerState.x+spd<WIDTH){
+                  clients[i].playerState.x += spd;
+              }
+          }
+          if(clients[i].keyboard&KEY_BYTE_U) {
+              if(clients[i].playerState.y-spd>0){
+                  clients[i].playerState.y -= spd;
+              }
+          }
+          if(clients[i].keyboard&KEY_BYTE_D) {
+              if(clients[i].playerState.y+spd<HEIGHT){
+                  clients[i].playerState.y += spd;
+              }
+          }
+
+        }
+    }
+}
+
+void init_client(int id) {
+    if(isValidId(id)){
+        clients[id].active=1;
+        clients[id].keyboard=0;
+
+        clients[id].playerState.x=WIDTH/2;
+        clients[id].playerState.y=HEIGHT/2;
     }
 }
 
@@ -65,18 +87,11 @@ int main() {
 
   while (1) {
 
-    //char* ptr = (char*) clients;
-    //puts("Sending to client");
-    //for(int i=0;i<sizeof(ClientState)*MAX_CHAT_CLIENTS;i++){
-      //printf("%x%c",ptr[i],i+1==sizeof(ClientState)*MAX_CHAT_CLIENTS?'\n':' ');
-    //}
-
     int id = acceptConnection();
     if (id != NO_CONNECTION) {
       recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
       printf("%s logged in!\n", client_names[id]);
-      clients[id].active=1;
-      //broadcast(str_buffer, (int)strlen(str_buffer) + 1);
+      init_client(id);
     }
 
     unsigned char incoming_byte;
