@@ -98,9 +98,22 @@ int inicializar() {
     return 1;
 }
 
+ALLEGRO_COLOR colors[MAX_CHAT_CLIENTS];
+
 int main(){
 
     assertConnection();
+
+    
+    for(int i=0;i<MAX_CHAT_CLIENTS;i++){
+        colors[i]=al_map_rgb(0xff,0xff,0xff);
+    }
+
+    colors[1]=al_map_rgb(0,0xff,0xff);
+    colors[2]=al_map_rgb(0xff,0,0xff);
+    colors[3]=al_map_rgb(0xff,0xff,0);
+
+
 
     if(!inicializar()){
         return -1;
@@ -162,7 +175,7 @@ int main(){
         for(int i=0;i<MAX_CHAT_CLIENTS;i++){
           if(players[i].active){
             al_draw_circle(players[i].playerState.x, players[i].playerState.y,
-            10.0f, al_map_rgb(0xff, 0xff, 0xff),10.0f);
+            10.0f, al_map_rgb(255*(i%2), 255*(i+1%2),255),10.0f);
           }
         }
 
