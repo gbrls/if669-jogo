@@ -1,7 +1,7 @@
 #ifndef LIB_GAMELIB_H
 #define LIB_GAMELIB_H
 
-#define MAX_CHAT_CLIENTS 2
+#define MAX_CHAT_CLIENTS 5
 
 typedef struct {
     float x;

@@ -149,11 +149,11 @@ int main(){
           //puts("NO MESSAGE");
           //printf("%0.2lf\n",al_get_time());
         } else {
-          printf("(%d), Recieved %d bytes, %d players\n",time(NULL),ret, ret/sizeof(ClientState));
+          //printf("(%d), Recieved %d bytes, %d players\n",time(NULL),ret, ret/sizeof(ClientState));
           char* ptr = (char*) players;
 
           for(int i=0;i<ret;i++){
-            printf("%x%c",ptr[i],i==ret-1?'\n':' ');
+            //printf("%x%c",ptr[i],i==ret-1?'\n':' ');
           }
         }
 

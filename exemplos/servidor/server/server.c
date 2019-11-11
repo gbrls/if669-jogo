@@ -15,7 +15,22 @@
 ClientState clients[MAX_CHAT_CLIENTS];
 
 unsigned char process_byte(unsigned char prev, unsigned char new){
-  return new;
+
+    unsigned char nib;
+    if(new&KEY_BYTE_L) nib = KEY_BYTE_L;
+    if(new&KEY_BYTE_R) nib = KEY_BYTE_R;
+    if(new&KEY_BYTE_U) nib = KEY_BYTE_U;
+    if(new&KEY_BYTE_D) nib = KEY_BYTE_D;
+
+    if(new&KEYDOWN_TYPE){
+       prev = prev|nib; 
+    }
+
+    if(new&KEYUP_TYPE){
+        prev=prev & (~nib);
+    }
+
+    return prev;
 }
 
 
@@ -69,7 +84,7 @@ int main() {
 
     if (msg_ret.status == MESSAGE_OK) {
       printf("Recieved 0x%x from %d\n", incoming_byte, msg_ret.client_id);
-      clients[msg_ret.client_id].keyboard=incoming_byte;
+      clients[msg_ret.client_id].keyboard=process_byte(clients[msg_ret.client_id].keyboard,incoming_byte);
 
       //sendMsgToClient(clients, sizeof(ClientState)*MAX_CHAT_CLIENTS, msg_ret.client_id);
 
