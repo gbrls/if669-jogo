@@ -10,8 +10,8 @@ jogadores, quando eles pressionam alguma tecla.
 Este byte encoda qual tecla esta sendo pressionada, se o evento foi de pressionamento 
 ou soltura da tecla e um bit para checar se a mensagem é valida.
 
-A cada ciclo o servidor deverá fazer o broadcast do vetor com os estados para todos os jogadores, (a frequencia disso ainda sera 
-definida e implementada).
+A cada ciclo o servidor deverá fazer o broadcast do vetor com os estados para todos os jogadores, ~(a frequencia disso ainda sera 
+definida e implementada)~.
 
 ## Lógica do jogo
 A estrutura interna do jogo será uma matriz e mais umas coisas ai.
