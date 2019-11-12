@@ -14,6 +14,7 @@
 
 ClientState clients[MAX_CHAT_CLIENTS];
 
+// Decoda um byte vindo do cliente
 unsigned char process_byte(unsigned char prev, unsigned char new){
 
     unsigned char nib;
@@ -101,16 +102,12 @@ int main() {
       printf("Recieved 0x%x from %d\n", incoming_byte, msg_ret.client_id);
       clients[msg_ret.client_id].keyboard=process_byte(clients[msg_ret.client_id].keyboard,incoming_byte);
 
-      //sendMsgToClient(clients, sizeof(ClientState)*MAX_CHAT_CLIENTS, msg_ret.client_id);
-
     } else if (msg_ret.status == DISCONNECT_MSG) {
       clients[msg_ret.client_id].active=0;
       sprintf(str_buffer, "%s disconnected", client_names[msg_ret.client_id]);
       printf("%s disconnected, id = %d is free\n",
              client_names[msg_ret.client_id], msg_ret.client_id);
-      //broadcast(str_buffer, (int)strlen(str_buffer) + 1);
     }
-
 
     update_players();
 
@@ -118,6 +115,5 @@ int main() {
       prev=al_get_time();
       broadcast(clients, sizeof(ClientState)*MAX_CHAT_CLIENTS);
     }
-
   }
 }

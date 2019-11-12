@@ -97,23 +97,10 @@ int inicializar() {
     return 1;
 }
 
-ALLEGRO_COLOR colors[MAX_CHAT_CLIENTS];
-
 int main(){
 
     srand(time(NULL));
     assertConnection();
-
-    
-    for(int i=0;i<MAX_CHAT_CLIENTS;i++){
-        colors[i]=al_map_rgb(0xff,0xff,0xff);
-    }
-
-    colors[1]=al_map_rgb(0,0xff,0xff);
-    colors[2]=al_map_rgb(0xff,0,0xff);
-    colors[3]=al_map_rgb(0xff,0xff,0);
-
-
 
     if(!inicializar()){
         return -1;
@@ -123,8 +110,6 @@ int main(){
 
     while(!sair){
 
-        
-        
         ALLEGRO_EVENT evento;
         ALLEGRO_TIMEOUT timeout;
         al_init_timeout(&timeout, 0.05);
@@ -176,8 +161,6 @@ int main(){
 
         al_flip_display();
     }
-
-    //al_rest(1);
 
     return 0;
 }
