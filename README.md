@@ -18,5 +18,5 @@ A estrutura interna do jogo será uma matriz e mais umas coisas ai.
 
 
 ## TODO
-O broadcast ainda não funciona bem, tão saindo alguns bytes certos, mas é preciso debugar isso: criando um ponteiro de char que aponta
-para o inicio do vetor de estado e percorrendo ele até o fim, para analizar os dados.
+~O broadcast ainda não funciona bem, tão saindo alguns bytes certos, mas é preciso debugar isso: criando um ponteiro de char que aponta
+para o inicio do vetor de estado e percorrendo ele até o fim, para analizar os dados.~
