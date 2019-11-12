@@ -35,6 +35,10 @@ unsigned char process_byte(unsigned char prev, unsigned char new){
 }
 
 
+int check_position(float x, float y) {
+
+}
+
 void update_players() {
     for(int i=0;isValidId(i);i++){
         if(clients[i].active){
