@@ -27,6 +27,8 @@ unsigned char process_byte(unsigned char prev, unsigned char new){
 
     if(new&KEYDOWN_TYPE){
        prev = prev|nib; 
+
+        if(new&KEY_BYTE_ACTION) state.geladeiras^=0xff;
     }
 
     if(new&KEYUP_TYPE){

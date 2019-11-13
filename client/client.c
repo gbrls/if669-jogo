@@ -184,7 +184,6 @@ int main(){
           }
         }
 
-        printf("0x%x\n",state.geladeiras);
         al_flip_display();
     }
 
