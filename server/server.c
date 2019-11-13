@@ -34,35 +34,40 @@ unsigned char process_byte(unsigned char prev, unsigned char new){
     return prev;
 }
 
+int check_map_collision(float x, float y) {
+    int mx = x/(float)MAP_SCALE;
+    int my = y/(float)MAP_SCALE;
 
-int check_position(float x, float y) {
+    return GameMap[mx+my*MAP_WIDTH]!='.';
+}
 
+int check_collision(float x, float y) {
+    if(x<0||y<0||x>WIDTH||y>HEIGHT||check_map_collision(x,y)) return 1;
+    return 0;
 }
 
 void update_players() {
     for(int i=0;isValidId(i);i++){
         if(clients[i].active){
 
-          float spd=0.2;
+          float spd=0.2,prevx=clients[i].playerState.x,prevy=clients[i].playerState.y;
+
           if(clients[i].keyboard&KEY_BYTE_L) {
-              if(clients[i].playerState.x-spd>0) {
-                  clients[i].playerState.x -= spd;
-              }
+              clients[i].playerState.x -= spd;
           }
           if(clients[i].keyboard&KEY_BYTE_R) {
-              if(clients[i].playerState.x+spd<WIDTH){
-                  clients[i].playerState.x += spd;
-              }
+              clients[i].playerState.x += spd;
           }
           if(clients[i].keyboard&KEY_BYTE_U) {
-              if(clients[i].playerState.y-spd>0){
-                  clients[i].playerState.y -= spd;
-              }
+              clients[i].playerState.y -= spd;
           }
           if(clients[i].keyboard&KEY_BYTE_D) {
-              if(clients[i].playerState.y+spd<HEIGHT){
-                  clients[i].playerState.y += spd;
-              }
+              clients[i].playerState.y += spd;
+          }
+
+          if(check_collision(clients[i].playerState.x,clients[i].playerState.y)) {
+              clients[i].playerState.x=prevx;
+              clients[i].playerState.y=prevy;
           }
 
         }

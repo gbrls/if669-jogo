@@ -101,8 +101,12 @@ void draw_map() {
     for(int i=0;i<MAP_HEIGHT;i++){
         for(int j=0;j<MAP_WIDTH;j++){
             if(GameMap[j+i*MAP_WIDTH]=='#'){
-                al_draw_filled_rectangle(i*MAP_SCALE,j*MAP_SCALE,
-                        (i+1)*MAP_SCALE,(j+1)*MAP_SCALE,al_map_rgb(255,255,255));
+                al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
+                        (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(255,255,255));
+            } else if(GameMap[j+i*MAP_WIDTH]>='0'&&GameMap[j+i*MAP_WIDTH]<='9'){
+                al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
+                        (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(255,255,0));
+
             }
         }
     }
@@ -170,7 +174,7 @@ int main(){
             //al_draw_circle(players[i].playerState.x, players[i].playerState.y,
             //10.0f, al_map_rgb(rand()%256, rand()%256, rand()%256),10.0f);
             al_draw_circle(players[i].playerState.x, players[i].playerState.y,
-            10.0f, al_map_rgb(0, 0, 255),10.0f);
+            PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
 
           }
         }
