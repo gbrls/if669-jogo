@@ -12,7 +12,8 @@
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 
-ClientState clients[MAX_CHAT_CLIENTS];
+GameState state;
+//ClientState clients[MAX_CHAT_CLIENTS];
 
 // Decoda um byte vindo do cliente
 unsigned char process_byte(unsigned char prev, unsigned char new){
@@ -22,6 +23,7 @@ unsigned char process_byte(unsigned char prev, unsigned char new){
     if(new&KEY_BYTE_R) nib = KEY_BYTE_R;
     if(new&KEY_BYTE_U) nib = KEY_BYTE_U;
     if(new&KEY_BYTE_D) nib = KEY_BYTE_D;
+    if(new&KEY_BYTE_ACTION) nib = KEY_BYTE_ACTION;
 
     if(new&KEYDOWN_TYPE){
        prev = prev|nib; 
@@ -48,26 +50,26 @@ int check_collision(float x, float y) {
 
 void update_players() {
     for(int i=0;isValidId(i);i++){
-        if(clients[i].active){
+        if(state.players[i].active){
 
-          float spd=0.2,prevx=clients[i].playerState.x,prevy=clients[i].playerState.y;
+          float spd=0.2,prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
 
-          if(clients[i].keyboard&KEY_BYTE_L) {
-              clients[i].playerState.x -= spd;
+          if(state.players[i].keyboard&KEY_BYTE_L) {
+              state.players[i].playerState.x -= spd;
           }
-          if(clients[i].keyboard&KEY_BYTE_R) {
-              clients[i].playerState.x += spd;
+          if(state.players[i].keyboard&KEY_BYTE_R) {
+              state.players[i].playerState.x += spd;
           }
-          if(clients[i].keyboard&KEY_BYTE_U) {
-              clients[i].playerState.y -= spd;
+          if(state.players[i].keyboard&KEY_BYTE_U) {
+              state.players[i].playerState.y -= spd;
           }
-          if(clients[i].keyboard&KEY_BYTE_D) {
-              clients[i].playerState.y += spd;
+          if(state.players[i].keyboard&KEY_BYTE_D) {
+              state.players[i].playerState.y += spd;
           }
 
-          if(check_collision(clients[i].playerState.x,clients[i].playerState.y)) {
-              clients[i].playerState.x=prevx;
-              clients[i].playerState.y=prevy;
+          if(check_collision(state.players[i].playerState.x,state.players[i].playerState.y)) {
+              state.players[i].playerState.x=prevx;
+              state.players[i].playerState.y=prevy;
           }
 
         }
@@ -76,11 +78,11 @@ void update_players() {
 
 void init_client(int id) {
     if(isValidId(id)){
-        clients[id].active=1;
-        clients[id].keyboard=0;
+        state.players[id].active=1;
+        state.players[id].keyboard=0;
 
-        clients[id].playerState.x=WIDTH/2;
-        clients[id].playerState.y=HEIGHT/2;
+        state.players[id].playerState.x=WIDTH/2;
+        state.players[id].playerState.y=HEIGHT/2;
     }
 }
 
@@ -94,6 +96,8 @@ int main() {
   puts("Server is running!!");
 
   double prev=al_get_time();
+
+  state.geladeiras=0x4;
 
   while (1) {
 
@@ -109,10 +113,10 @@ int main() {
 
     if (msg_ret.status == MESSAGE_OK) {
       printf("Recieved 0x%x from %d\n", incoming_byte, msg_ret.client_id);
-      clients[msg_ret.client_id].keyboard=process_byte(clients[msg_ret.client_id].keyboard,incoming_byte);
+      state.players[msg_ret.client_id].keyboard=process_byte(state.players[msg_ret.client_id].keyboard,incoming_byte);
 
     } else if (msg_ret.status == DISCONNECT_MSG) {
-      clients[msg_ret.client_id].active=0;
+      state.players[msg_ret.client_id].active=0;
       sprintf(str_buffer, "%s disconnected", client_names[msg_ret.client_id]);
       printf("%s disconnected, id = %d is free\n",
              client_names[msg_ret.client_id], msg_ret.client_id);
@@ -122,7 +126,7 @@ int main() {
 
     if(al_get_time()-prev > 0.05) {
       prev=al_get_time();
-      broadcast(clients, sizeof(ClientState)*MAX_CHAT_CLIENTS);
+      broadcast(state.players, sizeof(GameState));
     }
   }
 }

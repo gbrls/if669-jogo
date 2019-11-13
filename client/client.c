@@ -97,15 +97,19 @@ int inicializar() {
     return 1;
 }
 
-void draw_map() {
+void draw_map(unsigned int geladeiras) {
     for(int i=0;i<MAP_HEIGHT;i++){
         for(int j=0;j<MAP_WIDTH;j++){
             if(GameMap[j+i*MAP_WIDTH]=='#'){
                 al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
                         (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(255,255,255));
             } else if(GameMap[j+i*MAP_WIDTH]>='0'&&GameMap[j+i*MAP_WIDTH]<='9'){
+                int c=0;
+
+                if(geladeiras&(1<<(GameMap[j+i*MAP_WIDTH]-'0'))) c = 255;
+
                 al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
-                        (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(255,255,0));
+                        (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(c,255,0));
 
             }
         }
@@ -156,8 +160,9 @@ int main(){
             }
         }
 
-        ClientState players[MAX_CHAT_CLIENTS];
-        int ret = recvMsgFromServer(players, DONT_WAIT);
+        GameState state;
+        //ClientState players[MAX_CHAT_CLIENTS];
+        int ret = recvMsgFromServer(&state, DONT_WAIT);
 
         if(ret == NO_MESSAGE) {
 
@@ -166,19 +171,20 @@ int main(){
         }
 
         al_clear_to_color(al_map_rgb(0,0,0));
-        draw_map();
+        draw_map(state.geladeiras);
 
 
         for(int i=0;i<MAX_CHAT_CLIENTS;i++){
-          if(players[i].active){
+          if(state.players[i].active){
             //al_draw_circle(players[i].playerState.x, players[i].playerState.y,
             //10.0f, al_map_rgb(rand()%256, rand()%256, rand()%256),10.0f);
-            al_draw_circle(players[i].playerState.x, players[i].playerState.y,
+            al_draw_circle(state.players[i].playerState.x, state.players[i].playerState.y,
             PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
 
           }
         }
 
+        printf("0x%x\n",state.geladeiras);
         al_flip_display();
     }
 

@@ -13,6 +13,22 @@
 
 #define PLAYER_RADIUS 10
 
+typedef struct {
+    float x;
+    float y;
+} GamePlayerState;
+
+typedef struct {
+    int active;
+    unsigned char keyboard;
+    GamePlayerState playerState;
+} ClientState;
+
+typedef struct {
+    ClientState players[MAX_CHAT_CLIENTS];
+    unsigned char geladeiras;
+} GameState;
+
 unsigned char GameMap[] = {
 '#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#', 
 '#','.','5','.','.','.','.','.','.','.','.','#','#','#','#','#', 
@@ -32,15 +48,6 @@ unsigned char GameMap[] = {
 '#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'
 };
 
-typedef struct {
-    float x;
-    float y;
-} GamePlayerState;
 
-typedef struct {
-    int active;
-    unsigned char keyboard;
-    GamePlayerState playerState;
-} ClientState;
 
 #endif

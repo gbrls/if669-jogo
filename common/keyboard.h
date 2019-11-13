@@ -10,6 +10,7 @@
 #define KEY_BYTE_L 0x20
 #define KEY_BYTE_D 0x40
 #define KEY_BYTE_R 0x80
+#define KEY_BYTE_ACTION 0x04
 
 
 unsigned char encodeKey(int type, int key);

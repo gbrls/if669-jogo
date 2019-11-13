@@ -28,6 +28,11 @@ unsigned char encodeKey(int type, int key) {
         ans |= type|CONFIRMATION_BIT;
         break;
 
+    case ALLEGRO_KEY_SPACE:
+        ans |= (KEY_BYTE_ACTION);
+        ans |= type|CONFIRMATION_BIT;
+        break;
+
     default:
         break;
     }
