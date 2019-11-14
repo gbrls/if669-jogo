@@ -20,6 +20,7 @@ char game[120];
 
 ALLEGRO_DISPLAY * window = NULL;
 ALLEGRO_EVENT_QUEUE *fila_eventos=NULL;
+enum GameRenderState game_render_state =GAME_MAP;
 
 enum conn_ret_t tryConnect() {
   char server_ip[30];
@@ -149,6 +150,14 @@ int main(){
             if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
                 ktype=KEYDOWN_TYPE;
                 key=evento.keyboard.keycode;
+
+                if(key==ALLEGRO_KEY_ESCAPE){
+                    if(game_render_state==GAME_MAP) {
+                        game_render_state=GAME_RAYCAST;
+                    } else {
+                        game_render_state=GAME_MAP;
+                    }
+                }
             }
 
             byte = encodeKey(ktype, key);
@@ -171,17 +180,19 @@ int main(){
         }
 
         al_clear_to_color(al_map_rgb(0,0,0));
-        draw_map(state.geladeiras);
 
+        if(game_render_state==GAME_MAP) {
+            draw_map(state.geladeiras);
 
-        for(int i=0;i<MAX_CHAT_CLIENTS;i++){
-          if(state.players[i].active){
-            //al_draw_circle(players[i].playerState.x, players[i].playerState.y,
-            //10.0f, al_map_rgb(rand()%256, rand()%256, rand()%256),10.0f);
-            al_draw_circle(state.players[i].playerState.x, state.players[i].playerState.y,
-            PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
+            for(int i=0;i<MAX_CHAT_CLIENTS;i++){
+              if(state.players[i].active){
+                al_draw_circle(state.players[i].playerState.x, state.players[i].playerState.y,
+                PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
 
-          }
+              }
+            }
+        } else if(game_render_state==GAME_RAYCAST) {
+
         }
 
         al_flip_display();
