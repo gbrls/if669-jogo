@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 #include <allegro5/allegro.h>
 
@@ -54,19 +55,31 @@ void update_players() {
     for(int i=0;isValidId(i);i++){
         if(state.players[i].active){
 
-          float spd=0.2,prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
+          float spd=0.2,rotspd=0.002;
+          float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
 
           if(state.players[i].keyboard&KEY_BYTE_L) {
-              state.players[i].playerState.x -= spd;
+              //state.players[i].playerState.x -= spd;
+              state.players[i].playerState.angle -= rotspd;
           }
           if(state.players[i].keyboard&KEY_BYTE_R) {
-              state.players[i].playerState.x += spd;
+              //state.players[i].playerState.x += spd;
+              state.players[i].playerState.angle += rotspd;
           }
           if(state.players[i].keyboard&KEY_BYTE_U) {
-              state.players[i].playerState.y -= spd;
+              float ang= state.players[i].playerState.angle;
+              //float px = state.players[i].playerState.x;
+              //float py = state.players[i].playerState.y;
+
+
+              state.players[i].playerState.x += cosf(ang)*spd;
+              state.players[i].playerState.y += sinf(ang)*spd;
+
+              //state.players[i].playerState.y -= spd;
           }
           if(state.players[i].keyboard&KEY_BYTE_D) {
-              state.players[i].playerState.y += spd;
+              //float ang= state.players[i].playerState.angle;
+              //state.players[i].playerState.y += spd;
           }
 
           if(check_collision(state.players[i].playerState.x,state.players[i].playerState.y)) {
@@ -85,6 +98,8 @@ void init_client(int id) {
 
         state.players[id].playerState.x=WIDTH/2;
         state.players[id].playerState.y=HEIGHT/2;
+        state.players[id].playerState.angle=0.0f;
+
     }
 }
 

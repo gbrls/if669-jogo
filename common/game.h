@@ -12,8 +12,10 @@
 #define MAP_SCALE 50
 
 #define PLAYER_RADIUS 10
+#define PLAYER_VIEW_DIST 100
 
 typedef struct {
+    float angle;
     float x;
     float y;
 } GamePlayerState;

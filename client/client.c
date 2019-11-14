@@ -6,10 +6,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <string.h>
+#include <math.h>
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
-#include <string.h>
 
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
@@ -186,8 +187,18 @@ int main(){
 
             for(int i=0;i<MAX_CHAT_CLIENTS;i++){
               if(state.players[i].active){
-                al_draw_circle(state.players[i].playerState.x, state.players[i].playerState.y,
-                PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
+                
+                float px = state.players[i].playerState.x;
+                float py = state.players[i].playerState.y;
+                float angle =  state.players[i].playerState.angle;
+
+                al_draw_circle(px, py, 
+                        PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
+
+                al_draw_line(px, py,
+                        px + cosf(angle)*PLAYER_VIEW_DIST,
+                        py + sinf(angle)*PLAYER_VIEW_DIST,
+                        al_map_rgb(255,0,0), 5);
 
               }
             }
