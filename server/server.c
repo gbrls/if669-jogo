@@ -14,7 +14,6 @@
 #define LOGIN_MAX_SIZE 13
 
 GameState state;
-//ClientState clients[MAX_CHAT_CLIENTS];
 
 // Decoda um byte vindo do cliente
 unsigned char process_byte(unsigned char prev, unsigned char new){
@@ -59,18 +58,13 @@ void update_players() {
           float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
 
           if(state.players[i].keyboard&KEY_BYTE_L) {
-              //state.players[i].playerState.x -= spd;
               state.players[i].playerState.angle -= rotspd;
           }
           if(state.players[i].keyboard&KEY_BYTE_R) {
-              //state.players[i].playerState.x += spd;
               state.players[i].playerState.angle += rotspd;
           }
           if(state.players[i].keyboard&KEY_BYTE_U) {
               float ang= state.players[i].playerState.angle;
-              //float px = state.players[i].playerState.x;
-              //float py = state.players[i].playerState.y;
-
 
               state.players[i].playerState.x += cosf(ang)*spd;
               state.players[i].playerState.y += sinf(ang)*spd;
@@ -78,8 +72,7 @@ void update_players() {
               //state.players[i].playerState.y -= spd;
           }
           if(state.players[i].keyboard&KEY_BYTE_D) {
-              //float ang= state.players[i].playerState.angle;
-              //state.players[i].playerState.y += spd;
+              //TODO:
           }
 
           if(check_collision(state.players[i].playerState.x,state.players[i].playerState.y)) {
