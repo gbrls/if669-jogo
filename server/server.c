@@ -46,7 +46,7 @@ void toggle_geladeiras(float x, float y, float angle) {
             if(ret>1) {
                 ret-=2;
                 state.geladeiras^=(1<<ret);
-                
+
             }
             return;
         }
@@ -65,7 +65,7 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new){
     if(new&KEY_BYTE_ACTION) nib = KEY_BYTE_ACTION;
 
     if(new&KEYDOWN_TYPE){
-       prev = prev|nib; 
+       prev = prev|nib;
 
        if(new&KEY_BYTE_ACTION) {
            toggle_geladeiras(state.players[id].playerState.x,

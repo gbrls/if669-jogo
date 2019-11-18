@@ -16,8 +16,8 @@
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define HIST_MAX_SIZE 200
-//#define RAIZ_3 1.7320508075688772
-#define RAIZ_3 1.2
+#define RAIZ_3 1.7320508075688772
+//#define RAIZ_3 1.2
 char game[120];
 
 ALLEGRO_DISPLAY * window = NULL;
@@ -213,7 +213,10 @@ int main(){
           float dirX = cosf(angle), planeY = (RAIZ_3 * dirX/3);
           float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY/3);
           al_clear_to_color(al_map_rgb(0,0,0));
-          rayCasting(px, py, dirX, dirY, planeX, planeY);
+          rayCasting(px, py, dirX, dirY, planeX, planeY, state.geladeiras);
+//          rayCasting(py, px, dirY, dirX, planeY, planeX, state.geladeiras);
+
+          printf("Game: (%G,%G)\n",px,py);
           //draw_map(state.geladeiras);
 
           /*for(int i=0;i<MAX_CHAT_CLIENTS;i++){
