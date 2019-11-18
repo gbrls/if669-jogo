@@ -200,6 +200,9 @@ int main(){
                         py + sinf(angle)*PLAYER_VIEW_DIST,
                         al_map_rgb(255,0,0), 5);
 
+                al_draw_rectangle(5,5,state.conta,10,
+                        al_map_rgb(100,200,100),5);
+
               }
             }
         } else if(game_render_state==GAME_RAYCAST) {

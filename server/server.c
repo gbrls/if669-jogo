@@ -30,7 +30,6 @@ int check_map_collision(float x, float y) {
     } else {
         return 0;
     }
-    //return GameMap[mx+my*MAP_WIDTH]!='.';
 }
 
 void toggle_geladeiras(float x, float y, float angle) {
@@ -44,7 +43,6 @@ void toggle_geladeiras(float x, float y, float angle) {
 
         int ret = check_map_collision(nx,ny);
         if(ret>=1) {
-            //printf("GELADEIRA\n");
             if(ret>1) {
                 ret-=2;
                 state.geladeiras^=(1<<ret);
@@ -138,6 +136,18 @@ void init_client(int id) {
     }
 }
 
+void update_game_state(double delta_time) {
+    //printf("%g\n",state.conta);
+
+    double K=5.0;
+
+    for(int i=0;i<NUM_GELADEIRAS;i++){
+        if(state.geladeiras & (1<<i)){
+            state.conta += delta_time*K;
+        }
+    }
+}
+
 int main() {
 
   char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
@@ -147,9 +157,9 @@ int main() {
   serverInit(MAX_CHAT_CLIENTS);
   puts("Server is running!!");
 
-  double prev=al_get_time();
+  double prev_broadcast_time=al_get_time(), prev_update_time=al_get_time();
 
-  state.geladeiras=0x4;
+  //state.geladeiras=0x4; /* geladeira nmuber 3 starts on */
 
   while (1) {
 
@@ -175,14 +185,14 @@ int main() {
     }
 
     update_players();
+    update_game_state(al_get_time()-prev_update_time);
 
-    if(al_get_time()-prev > 0.05) {
-      prev=al_get_time();
+    if(al_get_time()-prev_broadcast_time > 0.05) {
+      prev_broadcast_time=al_get_time();
       broadcast(state.players, sizeof(GameState));
-
-        //for(int i=0;i<MAX_CHAT_CLIENTS;i++){
-            //printf("%d%c",state.players[i].active,i+1==MAX_CHAT_CLIENTS?'\n':' ');
-        //}
     }
+
+    prev_update_time = al_get_time();
+
   }
 }
