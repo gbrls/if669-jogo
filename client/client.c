@@ -102,13 +102,13 @@ int inicializar() {
 void draw_map(unsigned int geladeiras) {
     for(int i=0;i<MAP_HEIGHT;i++){
         for(int j=0;j<MAP_WIDTH;j++){
-            if(GameMap[j+i*MAP_WIDTH]=='#'){
+            if(GameMap[j][i]=='#'){
                 al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
                         (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(255,255,255));
-            } else if(GameMap[j+i*MAP_WIDTH]>='0'&&GameMap[j+i*MAP_WIDTH]<='9'){
+            } else if(GameMap[j][i]>='0'&&GameMap[j][i]<='9'){
                 int c=0;
 
-                if(geladeiras&(1<<(GameMap[j+i*MAP_WIDTH]-'0'))) c = 255;
+                if(geladeiras&(1<<(GameMap[j][i]-'0'))) c = 255;
 
                 al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
                         (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(c,255,0));
@@ -276,7 +276,7 @@ int main(){
                   mapY += rayDirY*step;
 
                   if(sla > 50) hit=1;
-                  int map = GameMap[mpx + MAP_WIDTH*mpy];
+                  int map = GameMap[mpx][mpy];
                   if(map!='.') hit=1;
                   if(map >= '0' && map <= '9') geladeira = 1;
                   //if(GameMap[(int)((float)mapX/MAP_SCALE) + (int) (((float) mapY/MAP_SCALE) * MAP_WIDTH)] != '.') hit++;
