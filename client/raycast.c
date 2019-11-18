@@ -6,7 +6,7 @@
 void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY){
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
-  float posX = x, posY = y, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
+  float posX = x/MAP_SCALE, posY = y/MAP_SCALE, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
   for(xs = 0; xs<WIDTH; xs++){
     hit = 0;
     cameraX = ((float) 2*xs/WIDTH) -1;

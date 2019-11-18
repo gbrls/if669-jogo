@@ -36,7 +36,7 @@ void toggle_geladeiras(float x, float y, float angle) {
     //printf("%02.f, %02.f, %0.2f\n",x,y,angle);
     float nx=x,ny=y,step=0.3;
 
-    while(((nx-x)*(nx-x) + (ny-y)*(ny-ny)) < PLAYER_VIEW_DIST*PLAYER_VIEW_DIST) {
+    while(((nx-x)*(nx-x) + (ny-y)*(ny-y)) < PLAYER_VIEW_DIST*PLAYER_VIEW_DIST) {
 
         nx += cosf(angle)*step;
         ny += sinf(angle)*step;
