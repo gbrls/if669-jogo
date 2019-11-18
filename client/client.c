@@ -1,7 +1,7 @@
 #include "keyboard.h"
 #include "game.h"
 #include "client.h"
-
+#include "raycast.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +16,7 @@
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define HIST_MAX_SIZE 200
-
+#define RAIZ_3 1.7320508075688772
 char game[120];
 
 ALLEGRO_DISPLAY * window = NULL;
@@ -95,7 +95,7 @@ int inicializar() {
 
 
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    al_register_event_source(fila_eventos, al_get_display_event_source(window)); 
+    al_register_event_source(fila_eventos, al_get_display_event_source(window));
     return 1;
 }
 
@@ -187,12 +187,12 @@ int main(){
 
             for(int i=0;i<MAX_CHAT_CLIENTS;i++){
               if(state.players[i].active){
-                
+
                 float px = state.players[i].playerState.x;
                 float py = state.players[i].playerState.y;
                 float angle =  state.players[i].playerState.angle;
 
-                al_draw_circle(px, py, 
+                al_draw_circle(px, py,
                         PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
 
                 al_draw_line(px, py,
@@ -203,7 +203,13 @@ int main(){
               }
             }
         } else if(game_render_state==GAME_RAYCAST) {
-
+          float px = state.players[0].playerState.x;
+          float py = state.players[0].playerState.y;
+          float angle =  state.players[0].playerState.angle;
+          float dirX = 10*cosf(angle), planeY = RAIZ_3 * dirX;
+          float dirY = 10*sinf(angle), planeX = -RAIZ_3 * dirY;
+          al_clear_to_color(al_map_rgb(0,0,0));
+          rayCasting(px, py, dirX, dirY, planeX, planeY);
         }
 
         al_flip_display();
