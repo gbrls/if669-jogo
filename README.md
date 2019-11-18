@@ -1,4 +1,6 @@
 # if669-jogo
+[Dcto](https://docs.google.com/document/d/1GUkAA6Tv_SgV5HuBIBtLkdRdiGoB3Gxj1L-__42aXpQ/edit)
+
 ## Estrutura
 A idéia é desenvolver algumas partes da funcionalidade separadamente, ou experimentar e depois juntar-las no projeto principal.
 Essas partes separadas estão na pasta _exemplos_
