@@ -111,8 +111,12 @@ void update_players() {
 
               //state.players[i].playerState.y -= spd;
           }
-          if(state.players[i].keyboard&KEY_BYTE_D) {
+          if(state.players[i].keyboard&KEY_BYTE_D) { 
               //TODO:
+              float ang= state.players[i].playerState.angle;
+
+              state.players[i].playerState.x -= cosf(ang)*spd;
+              state.players[i].playerState.y -= sinf(ang)*spd;
           }
 
           if(check_collision(state.players[i].playerState.x,state.players[i].playerState.y)) {
