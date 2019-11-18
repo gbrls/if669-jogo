@@ -209,39 +209,38 @@ int main(){
           float px = state.players[0].playerState.x;
           float py = state.players[0].playerState.y;
           float angle =  state.players[0].playerState.angle;
-          float k = 10 ;
-          float dirX = k*10*cosf(angle), planeY = (RAIZ_3 * dirX/3);
-          float dirY = k*10*sinf(angle), planeX = -(RAIZ_3 * dirY/3);
+          float dirX = 10*cosf(angle), planeY = (RAIZ_3 * dirX/3);
+          float dirY = 10*sinf(angle), planeX = -(RAIZ_3 * dirY/3);
           al_clear_to_color(al_map_rgb(0,0,0));
-          //rayCasting(px, py, dirX, dirY, planeX, planeY);
-          draw_map(state.geladeiras);
+          rayCasting(px, py, dirX, dirY, planeX, planeY);
+          //draw_map(state.geladeiras);
 
-          for(int i=0;i<MAX_CHAT_CLIENTS;i++){
+          /*for(int i=0;i<MAX_CHAT_CLIENTS;i++){
             if(state.players[i].active){
 
               float px = state.players[i].playerState.x;
               float py = state.players[i].playerState.y;
               float angle =  state.players[i].playerState.angle;
 
-              al_draw_circle(px, py,
-                      PLAYER_RADIUS, al_map_rgb(47, 82, 255),10.0f);
+              //al_draw_circle(px, py,
+                //      PLAYER_RADIUS, al_map_rgb(47, 82, 255),10.0f);
 
-              al_draw_line(px, py,
-                      dirX + px,
-                      dirY + py,
-                      al_map_rgb(255,0,100), 2.0);
-              al_draw_line(dirX + px, dirY + py,
-                          dirX + px + planeX,
-                          dirY + py +planeY,
-                          al_map_rgb(0,255,0), 2.0);
-            al_draw_line(dirX + px, dirY + py,
-                        dirX + px - planeX,
-                        dirY + py - planeY,
-                        al_map_rgb(0,255,0), 2.0);
+              //al_draw_line(px, py,
+                      //dirX + px,
+                      //dirY + py,
+                      //al_map_rgb(255,0,100), 2.0);
+              //al_draw_line(dirX + px, dirY + py,
+                //          dirX + px + planeX,
+                  //        dirY + py +planeY,
+                    //      al_map_rgb(0,255,0), 2.0);
+            //al_draw_line(dirX + px, dirY + py,
+                //        dirX + px - planeX,
+                  //      dirY + py - planeY,
+                    //    al_map_rgb(0,255,0), 2.0);
 
-              al_draw_rectangle(5,5,state.conta,10,
-                      al_map_rgb(100,200,100),5);
-              for(int k=0; k<WIDTH; k+=1){
+  //            al_draw_rectangle(5,5,state.conta,10,
+    //                  al_map_rgb(100,200,100),5);
+              /*for(int k=0; k<WIDTH; k+=1){
                 int hit = 0, stepY, side;
                 float cameraX = (float)2*k/WIDTH -1;
                 float rayX = px + dirX + planeX * cameraX;
@@ -293,10 +292,7 @@ int main(){
                   //      al_map_rgb(0,255*(!hit),255*(hit)), 2.0);
 
                   al_draw_line(k, HEIGHT/sla, k, 0, al_map_rgb(255,0,255*geladeira), 1);
-              }
-
-            }
-          }
+              }*/
         }
 
         al_flip_display();
