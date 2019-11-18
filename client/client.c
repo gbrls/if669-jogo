@@ -16,7 +16,8 @@
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define HIST_MAX_SIZE 200
-#define RAIZ_3 1.7320508075688772
+//#define RAIZ_3 1.7320508075688772
+#define RAIZ_3 1.2
 char game[120];
 
 ALLEGRO_DISPLAY * window = NULL;
@@ -209,8 +210,8 @@ int main(){
           float px = state.players[0].playerState.x;
           float py = state.players[0].playerState.y;
           float angle =  state.players[0].playerState.angle;
-          float dirX = 10*cosf(angle), planeY = (RAIZ_3 * dirX/3);
-          float dirY = 10*sinf(angle), planeX = -(RAIZ_3 * dirY/3);
+          float dirX = cosf(angle), planeY = (RAIZ_3 * dirX/3);
+          float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY/3);
           al_clear_to_color(al_map_rgb(0,0,0));
           rayCasting(px, py, dirX, dirY, planeX, planeY);
           //draw_map(state.geladeiras);
@@ -275,7 +276,7 @@ int main(){
                   mapY += rayDirY*step;
 
                   if(sla > 50) hit=1;
-                  int map = GameMap[mpx][mpy];
+                  int map = GameMap[mpx + MAP_WIDTH*mpy];
                   if(map!='.') hit=1;
                   if(map >= '0' && map <= '9') geladeira = 1;
                   //if(GameMap[(int)((float)mapX/MAP_SCALE) + (int) (((float) mapY/MAP_SCALE) * MAP_WIDTH)] != '.') hit++;

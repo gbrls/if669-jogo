@@ -6,38 +6,38 @@
 void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY){
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
-  float posX = x, posY = y, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
+  float posX = x/MAP_WIDTH, posY = y/MAP_SCALE, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
   for(xs = 0; xs<WIDTH; xs++){
     hit = 0;
     cameraX = ((float) 2*xs/WIDTH) -1;
-    rayX = x + dirX + planeX*cameraX;
-    rayY = y + dirY + planeY*cameraX;
-    //mapX = (int)(posX/MAP_SCALE );
-    //mapY = (int) posY;
+    rayX = dirX + planeX*cameraX;
+    rayY = dirY + planeY*cameraX;
+    mapX = (int) posX;
+    mapY = (int) posY;
 
     deltaDistX = fabs(1/rayX);
     deltaDistY = fabs(1/rayY);
 
     if(rayX<0){
-      mapX = (int)(posX/MAP_SCALE)*MAP_SCALE;
+      //mapX = (int)(posX/MAP_SCALE)*MAP_SCALE;
       stepX = -1;
       sideDistX = (posX - mapX) * deltaDistX;
     }
     else
     {
-      mapX = (int)(posX/MAP_SCALE + 1)*MAP_SCALE;
+      //mapX = (int)(posX/MAP_SCALE + 1)*MAP_SCALE;
       stepX = 1;
       sideDistX = (mapX + 1.0 - posX) * deltaDistX;
     }
     if (rayY < 0)
     {
-      mapY = (int)(posY /MAP_SCALE)*MAP_SCALE;
+      //mapY = (int)(posY /MAP_SCALE)*MAP_SCALE;
       stepY = -1;
       sideDistY = (posY - mapY) * deltaDistY;
     }
     else
     {
-      mapY = (int)(posY /MAP_SCALE + 1)*MAP_SCALE;
+      //mapY = (int)(posY /MAP_SCALE + 1)*MAP_SCALE;
       stepY = 1;
       sideDistY = (mapY + 1.0 - posY) * deltaDistY;
     }
@@ -53,19 +53,20 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
         mapY+= stepY;
         side = 1;
       }
-      if(GameMap[(int)((float)mapX/MAP_SCALE)][(int)((float)mapY/MAP_SCALE)] != '.') hit++;
+      if(GameMap[mapX][mapY] != '.') hit++;
     }
 
     if(side == 0) perpWallDist = (mapX - posX + (1 - stepX)/2)/rayX;
     else perpWallDist = (mapY - posY + (1 - stepY)/2)/rayY;
 
-    lineHeight = (int) (HEIGHT/perpWallDist);
+    lineHeight = (int) (HEIGHT/perpWallDist)*0.1;
+
     drawStart = -lineHeight/2 + HEIGHT/2;
     if(drawStart<0) drawStart = 0;
-    drawEnd = lineHeight/2 + HEIGHT;
+    drawEnd = lineHeight/2 + HEIGHT/2;
     if(drawEnd >= HEIGHT) drawEnd = HEIGHT - 1;
 
-    switch (GameMap[(int)((float)mapX/MAP_SCALE)][(int)(((float) mapY/MAP_SCALE))]) {
+    switch (GameMap[(int)(mapX)][(int)(mapY)]) {
       case '#':
         rgb[0] = 255;
         rgb[1] = 255;
