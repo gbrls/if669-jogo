@@ -3,15 +3,15 @@
 
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
-rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY){
+void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY){
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
-  float posX = x/MAP_SCALE, posY = y/MAP_SCALE, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
-  for(xs = 0; xs<MAP_WIDTH; xs++){
+  float posX = x, posY = y, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
+  for(xs = 0; xs<WIDTH; xs++){
     hit = 0;
-    cameraX = ((float) 2*xs/MAP_WIDTH) -1;
-    rayX = posX + dirX + planeX*cameraX;
-    rayY = posY + dirY + planeY*cameraX;
+    cameraX = ((float) 2*xs/WIDTH) -1;
+    rayX = x + dirX + planeX*cameraX;
+    rayY = y + dirY + planeY*cameraX;
     mapX = (int) posX;
     mapY = (int) posY;
 
@@ -49,19 +49,19 @@ rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY)
         mapY+= stepY;
         side = 1;
       }
-      if(GameMap[mapX + mapY * MAP_WIDTH] != '.') hit++;
+      if(GameMap[(int)((float)mapX/MAP_SCALE) + (int) (((float) mapY/MAP_SCALE) * MAP_WIDTH)] != '.') hit++;
     }
 
     if(side == 0) perpWallDist = (mapX - posX + (1 - stepX)/2)/rayX;
     else perpWallDist = (mapY - posY + (1 - stepY)/2)/rayY;
 
-    lineHeight = (int) (MAP_HEIGHT/perpWallDist);
-    drawStart = -lineHeight/2 + MAP_HEIGHT/2;
+    lineHeight = (int) (HEIGHT/perpWallDist);
+    drawStart = -lineHeight/2 + HEIGHT/2;
     if(drawStart<0) drawStart = 0;
-    drawEnd = lineHeight/2 + MAP_HEIGHT;
-    if(drawEnd >= MAP_HEIGHT) drawEnd = MAP_HEIGHT - 1;
+    drawEnd = lineHeight/2 + HEIGHT;
+    if(drawEnd >= HEIGHT) drawEnd = HEIGHT - 1;
 
-    switch (GameMap[mapX + MAP_WIDTH*mapY]) {
+    switch (GameMap[(int)((float)mapX/MAP_SCALE) + (int)(MAP_WIDTH*((float) MAP_SCALE*mapY))]) {
       case '#':
         rgb[0] = 255;
         rgb[1] = 255;
@@ -77,6 +77,7 @@ rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY)
       rgb[1] /= 2;
       rgb[2] /= 2;
     }
-    al_draw_line(xs, drawStart, xs, drawEnd, al_map_rgb(rgb[0], rgb[1], rgb[2]), 2.0);
+    float k = 0.8;
+    al_draw_filled_rectangle(xs*k, drawStart*k, (xs+1)*k, drawEnd*k, al_map_rgb(rgb[0], rgb[1], rgb[2]));
   }
 }

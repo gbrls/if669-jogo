@@ -209,8 +209,9 @@ int main(){
           float px = state.players[0].playerState.x;
           float py = state.players[0].playerState.y;
           float angle =  state.players[0].playerState.angle;
-          float dirX = 10*cosf(angle), planeY = RAIZ_3 * dirX;
-          float dirY = 10*sinf(angle), planeX = -RAIZ_3 * dirY;
+          float k = 0.5 ;
+          float dirX = 1.0*cosf(angle), planeY = (RAIZ_3 * dirX)*k;
+          float dirY = 1.0*sinf(angle), planeX = -(RAIZ_3 * dirY)*k;
           al_clear_to_color(al_map_rgb(0,0,0));
           rayCasting(px, py, dirX, dirY, planeX, planeY);
         }
