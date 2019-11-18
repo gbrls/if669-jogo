@@ -133,7 +133,7 @@ int main(){
 
         ALLEGRO_EVENT evento;
         ALLEGRO_TIMEOUT timeout;
-        al_init_timeout(&timeout, 0.05);
+        al_init_timeout(&timeout, 0.020);
 
         if(al_wait_for_event_until(fila_eventos, &evento, &timeout)){
             if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {

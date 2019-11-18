@@ -16,8 +16,49 @@
 GameState state;
 //ClientState clients[MAX_CHAT_CLIENTS];
 
+int check_map_collision(float x, float y) {
+    int mx = x/(float)MAP_SCALE;
+    int my = y/(float)MAP_SCALE;
+
+    if(GameMap[mx+my*MAP_WIDTH]!='.'){
+
+        if(GameMap[mx+my*MAP_WIDTH] >='0'&&GameMap[mx+my*MAP_WIDTH] <= '9'){
+            return  (GameMap[mx+my*MAP_WIDTH]-'0')+2;
+        }
+
+        return 1;
+
+    } else {
+        return 0;
+    }
+    //return GameMap[mx+my*MAP_WIDTH]!='.';
+}
+
+void toggle_geladeiras(float x, float y, float angle) {
+    //printf("%02.f, %02.f, %0.2f\n",x,y,angle);
+    float nx=x,ny=y,step=0.3;
+
+    while(((nx-x)*(nx-x) + (ny-y)*(ny-ny)) < PLAYER_VIEW_DIST*PLAYER_VIEW_DIST) {
+
+        nx += cosf(angle)*step;
+        ny += sinf(angle)*step;
+
+        int ret = check_map_collision(nx,ny);
+        if(ret>=1) {
+            //printf("GELADEIRA\n");
+            if(ret>1) {
+                ret-=2;
+                state.geladeiras^=(1<<ret);
+                
+            }
+            return;
+        }
+    }
+}
+
 // Decoda um byte vindo do cliente
-unsigned char process_byte(unsigned char prev, unsigned char new){
+unsigned char process_byte(int id, unsigned char prev, unsigned char new){
+
 
     unsigned char nib;
     if(new&KEY_BYTE_L) nib = KEY_BYTE_L;
@@ -29,7 +70,12 @@ unsigned char process_byte(unsigned char prev, unsigned char new){
     if(new&KEYDOWN_TYPE){
        prev = prev|nib; 
 
-        if(new&KEY_BYTE_ACTION) state.geladeiras^=0xff;
+       if(new&KEY_BYTE_ACTION) {
+           toggle_geladeiras(state.players[id].playerState.x,
+                   state.players[id].playerState.y,
+                   state.players[id].playerState.angle);
+       }
+       //if(new&KEY_BYTE_ACTION) state.geladeiras^=0xff;
     }
 
     if(new&KEYUP_TYPE){
@@ -39,20 +85,16 @@ unsigned char process_byte(unsigned char prev, unsigned char new){
     return prev;
 }
 
-int check_map_collision(float x, float y) {
-    int mx = x/(float)MAP_SCALE;
-    int my = y/(float)MAP_SCALE;
 
-    return GameMap[mx+my*MAP_WIDTH]!='.';
-}
 
 int check_collision(float x, float y) {
     if(x<0||y<0||x>WIDTH||y>HEIGHT||check_map_collision(x,y)) return 1;
     return 0;
 }
 
+
 void update_players() {
-    for(int i=0;isValidId(i);i++){
+    for(int i=0;i<MAX_CHAT_CLIENTS;i++){
         if(state.players[i].active){
 
           float spd=0.2,rotspd=0.002;
@@ -130,7 +172,7 @@ int main() {
 
     if (msg_ret.status == MESSAGE_OK) {
       printf("Recieved 0x%x from %d\n", incoming_byte, msg_ret.client_id);
-      state.players[msg_ret.client_id].keyboard=process_byte(state.players[msg_ret.client_id].keyboard,incoming_byte);
+      state.players[msg_ret.client_id].keyboard=process_byte(msg_ret.client_id,state.players[msg_ret.client_id].keyboard,incoming_byte);
 
     } else if (msg_ret.status == DISCONNECT_MSG) {
       state.players[msg_ret.client_id].active=0;
@@ -144,6 +186,10 @@ int main() {
     if(al_get_time()-prev > 0.05) {
       prev=al_get_time();
       broadcast(state.players, sizeof(GameState));
+
+        //for(int i=0;i<MAX_CHAT_CLIENTS;i++){
+            //printf("%d%c",state.players[i].active,i+1==MAX_CHAT_CLIENTS?'\n':' ');
+        //}
     }
   }
 }
