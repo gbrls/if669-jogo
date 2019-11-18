@@ -39,6 +39,6 @@ enum GameRenderState {
     GAME_RAYCAST,
 };
 
-extern unsigned char GameMap[];
+extern unsigned char GameMap[MAP_WIDTH][MAP_HEIGHT];
 
 #endif

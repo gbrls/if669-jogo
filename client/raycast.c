@@ -49,7 +49,7 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
         mapY+= stepY;
         side = 1;
       }
-      if(GameMap[(int)((float)mapX/MAP_SCALE) + (int) (((float) mapY/MAP_SCALE) * MAP_WIDTH)] != '.') hit++;
+      if(GameMap[(int)((float)mapX/MAP_SCALE)][(int)((float) mapY/MAP_SCALE)] != '.') hit++;
     }
 
     if(side == 0) perpWallDist = (mapX - posX + (1 - stepX)/2)/rayX;
@@ -61,7 +61,7 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
     drawEnd = lineHeight/2 + HEIGHT;
     if(drawEnd >= HEIGHT) drawEnd = HEIGHT - 1;
 
-    switch (GameMap[(int)((float)mapX/MAP_SCALE) + (int)(MAP_WIDTH*((float) MAP_SCALE*mapY))]) {
+    switch (GameMap[(int)((float)mapX/MAP_SCALE)][(int)((float) MAP_SCALE*mapY)]) {
       case '#':
         rgb[0] = 255;
         rgb[1] = 255;
