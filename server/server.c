@@ -19,10 +19,10 @@ int check_map_collision(float x, float y) {
     int mx = x/(float)MAP_SCALE;
     int my = y/(float)MAP_SCALE;
 
-    if(GameMap[mx+my*MAP_WIDTH]!='.'){
+    if(GameMap[mx][my]!='.'){
 
-        if(GameMap[mx+my*MAP_WIDTH] >='0'&&GameMap[mx+my*MAP_WIDTH] <= '9'){
-            return  (GameMap[mx+my*MAP_WIDTH]-'0')+2;
+        if(GameMap[mx][my] >='0'&&GameMap[mx][my] <= '9'){
+            return  (GameMap[mx][my]-'0')+2;
         }
 
         return 1;
