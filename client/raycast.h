@@ -2,5 +2,5 @@
 #define RAYCAST_H
 #include <math.h>
 #include "game.h"
-void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, char geladeiras);
+void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state);
 #endif

@@ -100,23 +100,48 @@ int inicializar() {
     return 1;
 }
 
-void draw_map(unsigned int geladeiras) {
+void draw_map(GameState* state) {
+
+  float offx = state->players[state->id].playerState.x - WIDTH/2;
+  float offy = state->players[state->id].playerState.y - HEIGHT/2;
+
     for(int i=0;i<MAP_HEIGHT;i++){
         for(int j=0;j<MAP_WIDTH;j++){
             if(GameMap[j][i]=='#'){
-                al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
-                        (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(255,255,255));
+                al_draw_filled_rectangle(j*MAP_SCALE-offx,i*MAP_SCALE-offy,
+                        (j+1)*MAP_SCALE-offx,(i+1)*MAP_SCALE-offy,al_map_rgb(255,255,255));
             } else if(GameMap[j][i]>='0'&&GameMap[j][i]<='9'){
                 int c=0;
 
-                if(geladeiras&(1<<(GameMap[j][i]-'0'))) c = 255;
+                if(state->geladeiras&(1<<(GameMap[j][i]-'0'))) c = 255;
 
-                al_draw_filled_rectangle(j*MAP_SCALE,i*MAP_SCALE,
-                        (j+1)*MAP_SCALE,(i+1)*MAP_SCALE,al_map_rgb(c,255,0));
+                al_draw_filled_rectangle(j*MAP_SCALE-offx,i*MAP_SCALE-offy,
+                        (j+1)*MAP_SCALE-offx,(i+1)*MAP_SCALE-offy,al_map_rgb(c,255,0));
 
             }
         }
     }
+
+     for(int i=0;i<MAX_CHAT_CLIENTS;i++){
+              if(state->players[i].active){
+
+                float px = state->players[i].playerState.x - offx;
+                float py = state->players[i].playerState.y - offy;
+                float angle =  state->players[i].playerState.angle;
+
+                al_draw_circle(px, py,
+                        PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
+
+                al_draw_line(px, py,
+                        px + cosf(angle)*PLAYER_VIEW_DIST,
+                        py + sinf(angle)*PLAYER_VIEW_DIST,
+                        al_map_rgb(255,0,0), 5);
+
+                al_draw_rectangle(5,5,state->conta,10,
+                        al_map_rgb(100,200,100),5);
+
+              }
+            }
 }
 
 int main(){
@@ -184,28 +209,7 @@ int main(){
         al_clear_to_color(al_map_rgb(0,0,0));
 
         if(game_render_state==GAME_MAP) {
-            draw_map(state.geladeiras);
-
-            for(int i=0;i<MAX_CHAT_CLIENTS;i++){
-              if(state.players[i].active){
-
-                float px = state.players[i].playerState.x;
-                float py = state.players[i].playerState.y;
-                float angle =  state.players[i].playerState.angle;
-
-                al_draw_circle(px, py,
-                        PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
-
-                al_draw_line(px, py,
-                        px + cosf(angle)*PLAYER_VIEW_DIST,
-                        py + sinf(angle)*PLAYER_VIEW_DIST,
-                        al_map_rgb(255,0,0), 5);
-
-                al_draw_rectangle(5,5,state.conta,10,
-                        al_map_rgb(100,200,100),5);
-
-              }
-            }
+            draw_map(&state);
         } else if(game_render_state==GAME_RAYCAST) {
 
           
@@ -223,7 +227,7 @@ int main(){
           al_draw_filled_rectangle(0,HEIGHT/2,WIDTH,HEIGHT,
                         al_map_rgb(81,37,0));
 
-          rayCasting(px, py, dirX, dirY, planeX, planeY, state.geladeiras);
+          rayCasting(px, py, dirX, dirY, planeX, planeY, &state);
 
           printf("Game: (%G,%G)\n",px,py);
         }

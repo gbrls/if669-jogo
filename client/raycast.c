@@ -4,7 +4,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <stdio.h>
 
-void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, char geladeiras){
+void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state){
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
   float posX = x/MAP_SCALE, posY = y/MAP_SCALE, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
@@ -83,7 +83,7 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
 
         if(alvo >= '0' && alvo <= '9'){
           alvo = alvo - '0';
-          if(geladeiras&(1<<alvo)){
+          if(state->geladeiras&(1<<alvo)){
             rgb[0] = 0;
             rgb[1] = 0;
             rgb[2] = 255;
@@ -100,4 +100,44 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
     }
     al_draw_line(xs, drawStart, xs, drawEnd, al_map_rgb(rgb[0], rgb[1], rgb[2]), 1.0);
   }
+
+  // Desenhando os outros jogadores
+    for(int i=0;i<MAX_CHAT_CLIENTS;i++) {
+      if(i == state->id || !state->players[i].active) continue;
+      
+      float spriteX = state->players[i].playerState.x/MAP_SCALE - posX;
+      float spriteY = state->players[i].playerState.y/MAP_SCALE - posY;
+
+      //transform sprite with the inverse camera matrix
+      // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+      // [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+      // [ planeY   dirY ]                                          [ -planeY  planeX ]
+
+      float invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
+
+      float transformX = invDet * (dirY * spriteX - dirX * spriteY);
+      float transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D
+
+      int spriteScreenX = (int)((WIDTH / 2) * (1 + transformX / transformY));
+
+      //calculate height of the sprite on screen
+      int spriteHeight = abs((int)(HEIGHT / (transformY))); //using "transformY" instead of the real distance prevents fisheye
+      //calculate lowest and highest pixel to fill in current stripe
+      int drawStartY = -spriteHeight / 2 + HEIGHT / 2;
+      if(drawStartY < 0) drawStartY = 0;
+      int drawEndY = spriteHeight / 2 + HEIGHT / 2;
+      if(drawEndY >= HEIGHT) drawEndY = HEIGHT - 1;
+
+      //calculate width of the sprite
+      int spriteWidth = abs( (int)(HEIGHT / (transformY)));
+      int drawStartX = -spriteWidth / 2 + spriteScreenX;
+      if(drawStartX < 0) drawStartX = 0;
+      int drawEndX = spriteWidth / 2 + spriteScreenX;
+      if(drawEndX >= WIDTH) drawEndX = WIDTH - 1;
+
+      al_draw_filled_rectangle(drawStartX, drawStartY,
+       drawStartX+spriteWidth, drawStartY+spriteHeight, al_map_rgb(255,0,0));
+
+    }
+
 }
