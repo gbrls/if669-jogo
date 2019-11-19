@@ -32,6 +32,7 @@ typedef struct {
     ClientState players[MAX_CHAT_CLIENTS];
     unsigned char geladeiras;
     double conta;
+    unsigned char id;
 } GameState;
 
 enum GameRenderState {

@@ -193,7 +193,16 @@ int main() {
 
     if(al_get_time()-prev_broadcast_time > 0.05) {
       prev_broadcast_time=al_get_time();
-      broadcast(state.players, sizeof(GameState));
+
+        // a little gambiarra :)
+        for (int i = 0; i < MAX_CHAT_CLIENTS; ++i) {
+            if (isValidId(i)) {
+                state.id=i;
+                sendMsgToClient(&state, sizeof(GameState), i);
+            }
+        }
+
+      //broadcast(state.players, sizeof(GameState));
     }
 
     prev_update_time = al_get_time();

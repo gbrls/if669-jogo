@@ -210,9 +210,9 @@ int main(){
 
           
 
-          float px = state.players[0].playerState.x;
-          float py = state.players[0].playerState.y;
-          float angle =  state.players[0].playerState.angle;
+          float px = state.players[state.id].playerState.x;
+          float py = state.players[state.id].playerState.y;
+          float angle =  state.players[state.id].playerState.angle;
           float dirX = cosf(angle), planeY = (RAIZ_3 * dirX/3);
           float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY/3);
           al_clear_to_color(al_map_rgb(0,0,0));
