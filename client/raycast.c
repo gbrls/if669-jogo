@@ -7,6 +7,7 @@
 void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state){
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
+  int zbuffer[WIDTH]={0};
   float posX = x/MAP_SCALE, posY = y/MAP_SCALE, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
   for(xs = 0; xs<WIDTH; xs++){
     hit = 0;
@@ -68,7 +69,7 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
     if(drawEnd >= HEIGHT) drawEnd = HEIGHT - 1;
 
     char alvo = GameMap[(int)(mapX)][(int)(mapY)];
-    printf("(%G,%G)\n",posX,posY);
+    //printf("(%G,%G)\n",posX,posY);
 
     switch (alvo) {
       case '#':
@@ -88,7 +89,7 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
             rgb[1] = 0;
             rgb[2] = 255;
 
-            printf("GELAOIDEOAS\n");
+            //printf("GELAOIDEOAS\n");
           }
         }
 
@@ -99,6 +100,7 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
       rgb[2] /= 2;
     }
     al_draw_line(xs, drawStart, xs, drawEnd, al_map_rgb(rgb[0], rgb[1], rgb[2]), 1.0);
+    zbuffer[xs]=perpWallDist;
   }
 
   // Desenhando os outros jogadores
@@ -135,9 +137,26 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
       int drawEndX = spriteWidth / 2 + spriteScreenX;
       if(drawEndX >= WIDTH) drawEndX = WIDTH - 1;
 
-      al_draw_filled_rectangle(drawStartX, drawStartY,
-       drawStartX+spriteWidth, drawStartY+spriteHeight, al_map_rgb(255,0,0));
+      //float ang = atan2f(spriteX-posX, spriteY-posY);
+      //printf("Angle %0.2f\n", ang);
+      int is_front = ((cosf(state->players[i].playerState.angle) * cosf(state->players[state->id].playerState.angle)) < 0?1:0);
 
+      //printf("%s\n", ang < 0.0f? "FRONT":"BACK");
+
+      //if(transformY > 0) {
+      //  int c = 50;
+      //  if(is_front) {
+      //    c = 255;
+      //  }
+      //  al_draw_filled_rectangle(drawStartX, drawStartY,
+      //   drawStartX+spriteWidth, drawStartY+spriteHeight, al_map_rgb(c,0,0));
+      //}
+
+      for(int stripe = drawStartX; stripe < drawEndX; stripe++){
+        if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < zbuffer[stripe]){
+          al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255,0,0), 2);
+        }
+      }
     }
 
 }
