@@ -1,4 +1,4 @@
-#include <math.h>
+  #include <math.h>
 #include "game.h"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
@@ -106,6 +106,8 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
   // Desenhando os outros jogadores
     for(int i=0;i<MAX_CHAT_CLIENTS;i++) {
       if(i == state->id || !state->players[i].active) continue;
+
+   
       
       float spriteX = state->players[i].playerState.x/MAP_SCALE - posX;
       float spriteY = state->players[i].playerState.y/MAP_SCALE - posY;
@@ -120,18 +122,24 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
       float transformX = invDet * (dirY * spriteX - dirX * spriteY);
       float transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D
 
+      #define uDiv 1
+      #define vDiv 1
+      #define vMove 0.0
+
+      int vMoveScreen = (int)(vMove / transformY);
+
       int spriteScreenX = (int)((WIDTH / 2) * (1 + transformX / transformY));
 
       //calculate height of the sprite on screen
-      int spriteHeight = abs((int)(HEIGHT / (transformY))); //using "transformY" instead of the real distance prevents fisheye
+      int spriteHeight = abs((int)(HEIGHT / (transformY*2)))/vDiv; //using "transformY" instead of the real distance prevents fisheye
       //calculate lowest and highest pixel to fill in current stripe
-      int drawStartY = -spriteHeight / 2 + HEIGHT / 2;
+      int drawStartY = -spriteHeight / 2 + HEIGHT / 2 + vMoveScreen;
       if(drawStartY < 0) drawStartY = 0;
-      int drawEndY = spriteHeight / 2 + HEIGHT / 2;
+      int drawEndY = spriteHeight / 2 + HEIGHT / 2 + vMoveScreen;
       if(drawEndY >= HEIGHT) drawEndY = HEIGHT - 1;
 
       //calculate width of the sprite
-      int spriteWidth = abs( (int)(HEIGHT / (transformY)));
+      int spriteWidth = abs( (int)(HEIGHT / (transformY)))/uDiv;
       int drawStartX = -spriteWidth / 2 + spriteScreenX;
       if(drawStartX < 0) drawStartX = 0;
       int drawEndX = spriteWidth / 2 + spriteScreenX;
@@ -154,8 +162,8 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
 
       for(int stripe = drawStartX; stripe < drawEndX; stripe++){
         if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < zbuffer[stripe]){
-          al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255,0,0), 2);
-        }
+          al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255 / (2-is_front),0,0), 2);
+        } 
       }
     }
 
