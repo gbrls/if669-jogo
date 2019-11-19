@@ -7,7 +7,7 @@
 void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state){
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
-  int zbuffer[WIDTH]={0};
+  float zbuffer[WIDTH]={0};
   float posX = x/MAP_SCALE, posY = y/MAP_SCALE, rayX, rayY, deltaDistX, deltaDistY, perpWallDist, sideDistX, sideDistY, cameraX;
   for(xs = 0; xs<WIDTH; xs++){
     hit = 0;
