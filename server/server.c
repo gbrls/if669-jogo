@@ -144,6 +144,7 @@ void update_game_state(double delta_time) {
     //printf("%g\n",state.conta);
 
     double K=5.0;
+    state.elapsed += delta_time;
 
     for(int i=0;i<NUM_GELADEIRAS;i++){
         if(state.geladeiras & (1<<i)){
@@ -164,7 +165,7 @@ int main() {
   double prev_broadcast_time=al_get_time(), prev_update_time=al_get_time();
 
   //state.geladeiras=0x4; /* geladeira nmuber 3 starts on */
-
+  state.elapsed=0;
   while (1) {
 
     int id = acceptConnection();

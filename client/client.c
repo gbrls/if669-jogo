@@ -318,8 +318,8 @@ void draw_map(GameState* state) {
                         py + sinf(angle)*PLAYER_VIEW_DIST,
                         al_map_rgb(255,0,0), 5);
 
-                al_draw_rectangle(5,5,state->conta,10,
-                        al_map_rgb(100,200,100),5);
+                //al_draw_rectangle(5,5,state->conta,10,
+                //        al_map_rgb(100,200,100),5);
 
               }
             }
@@ -637,8 +637,20 @@ int main()
 
           rayCasting(px, py, dirX, dirY, planeX, planeY, &state);
 
-          printf("Game: (%G,%G)\n",px,py);
+          
       }
+
+      al_draw_rectangle(5,5,state.conta,10,
+                        al_map_rgb(100,200,100),5);
+
+      al_draw_rectangle(5,25,state.elapsed,30,
+                        al_map_rgb(200,200,100),5);
+
+      char txt[50]={};
+      sprintf(txt,"%G",state.conta);
+      al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 35,0, txt);
+      sprintf(txt,"%d:%02d",(int)(state.elapsed/60.0), (int)(state.elapsed)%60);
+      al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 75,0, txt);
 
       break;
     case HowPlay:

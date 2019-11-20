@@ -35,6 +35,7 @@ typedef struct
     ClientState players[MAX_CHAT_CLIENTS];
     unsigned char geladeiras;
     double conta;
+    double elapsed;
     unsigned char id;
 } GameState;
 
