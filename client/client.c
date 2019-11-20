@@ -44,7 +44,7 @@ ALLEGRO_BITMAP *botao_howPlay = NULL;
 
 enum GameRenderState game_render_state = GAME_MAP;
 enum estadoDoJogo state = menu;
-enum Hover hovermenu;
+enum Hover hovermenu = nada;
 
 int res_x_comp, res_y_comp;
 char str[12] = "0";
