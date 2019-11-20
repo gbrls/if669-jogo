@@ -164,7 +164,7 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
       for(int stripe = drawStartX; stripe < drawEndX; stripe++){
         if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < zbuffer[stripe]){
 
-          if(i==state.jaquin) {
+          if(i==state->jaquin) {
             int c = 150 / (2-is_front);
             al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(c,c,c), 2);
           } else {
