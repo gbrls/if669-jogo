@@ -286,111 +286,119 @@ int inicializar()
   return 1;
 }
 
-void draw_map(GameState* state) {
+void draw_map(GameState *state)
+{
 
-  float offx = state->players[state->id].playerState.x - WIDTH/2;
-  float offy = state->players[state->id].playerState.y - HEIGHT/2;
+  float offx = state->players[state->id].playerState.x - WIDTH / 2;
+  float offy = state->players[state->id].playerState.y - HEIGHT / 2;
 
-    for(int i=0;i<MAP_HEIGHT;i++){
-        for(int j=0;j<MAP_WIDTH;j++){
-            if(GameMap[j][i]=='#'){
-                al_draw_filled_rectangle(j*MAP_SCALE-offx,i*MAP_SCALE-offy,
-                        (j+1)*MAP_SCALE-offx,(i+1)*MAP_SCALE-offy,al_map_rgb(255,255,255));
-            } else if(GameMap[j][i]>='0'&&GameMap[j][i]<='9'){
-                int c=0;
+  for (int i = 0; i < MAP_HEIGHT; i++)
+  {
+    for (int j = 0; j < MAP_WIDTH; j++)
+    {
+      if (GameMap[j][i] == '#')
+      {
+        al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
+                                 (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(255, 255, 255));
+      }
+      else if (GameMap[j][i] >= '0' && GameMap[j][i] <= '9')
+      {
+        int c = 0;
 
-                if(state->geladeiras&(1<<(GameMap[j][i]-'0'))) c = 255;
+        if (state->geladeiras & (1 << (GameMap[j][i] - '0')))
+          c = 255;
 
-                al_draw_filled_rectangle(j*MAP_SCALE-offx,i*MAP_SCALE-offy,
-                        (j+1)*MAP_SCALE-offx,(i+1)*MAP_SCALE-offy,al_map_rgb(c,255,0));
+        al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
+                                 (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(c, 255, 0));
+      }
+    }
+  }
 
-            }
-        }
+  for (int i = 0; i < MAX_CHAT_CLIENTS; i++)
+  {
+    if (state->players[i].active)
+    {
+
+      float px = state->players[i].playerState.x - offx;
+      float py = state->players[i].playerState.y - offy;
+      float angle = state->players[i].playerState.angle;
+
+      int c = 0;
+      int congelado = state->players[i].playerState.froze;
+      if (i == (int)(state->jaquin))
+        c = 255;
+
+      al_draw_circle(px, py,
+                     PLAYER_RADIUS, al_map_rgb(c, 255 * congelado, 255), 10.0f);
+
+      al_draw_line(px, py,
+                   px + cosf(angle) * PLAYER_VIEW_DIST,
+                   py + sinf(angle) * PLAYER_VIEW_DIST,
+                   al_map_rgb(255, 0, 0), 5);
+
+      //al_draw_rectangle(5,5,state->conta,10,
+      //        al_map_rgb(100,200,100),5);
+    }
+  }
+}
+
+void get_events()
+{
+  al_init_timeout(&timeout, 0.020);
+
+  if (al_wait_for_event_until(fila_eventos, &evento, &timeout))
+  {
+
+    if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+    {
+      state = sair;
     }
 
-     for(int i=0;i<MAX_CHAT_CLIENTS;i++){
-              if(state->players[i].active){
+    unsigned char byte = 0;
+    int ktype = 0, key = 0;
 
-                float px = state->players[i].playerState.x - offx;
-                float py = state->players[i].playerState.y - offy;
-                float angle =  state->players[i].playerState.angle;
+    if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+    {
+      state = sair;
+    }
 
-                int c =0;
-                int congelado = state->players[i].playerState.froze;
-                if(i==(int)(state->jaquin)) c = 255;
+    if (evento.type == ALLEGRO_EVENT_KEY_UP)
+    {
+      ktype = KEYUP_TYPE;
+      key = evento.keyboard.keycode;
+    }
 
-                al_draw_circle(px, py,
-                        PLAYER_RADIUS, al_map_rgb(c, 255*congelado, 255),10.0f);
+    if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+    {
+      ktype = KEYDOWN_TYPE;
+      key = evento.keyboard.keycode;
 
-                al_draw_line(px, py,
-                        px + cosf(angle)*PLAYER_VIEW_DIST,
-                        py + sinf(angle)*PLAYER_VIEW_DIST,
-                        al_map_rgb(255,0,0), 5);
-
-                //al_draw_rectangle(5,5,state->conta,10,
-                //        al_map_rgb(100,200,100),5);
-
-              }
-            }
-}
-
-void get_events() {
-al_init_timeout(&timeout, 0.020);
-
-      if (al_wait_for_event_until(fila_eventos, &evento, &timeout))
+      if (key == ALLEGRO_KEY_ESCAPE)
       {
-
-        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        if (game_render_state == GAME_MAP)
         {
-          state = sair;
+          game_render_state = GAME_RAYCAST;
         }
-
-        unsigned char byte = 0;
-        int ktype = 0, key = 0;
-
-        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        else
         {
-          state = sair;
-        }
-
-        if (evento.type == ALLEGRO_EVENT_KEY_UP)
-        {
-          ktype = KEYUP_TYPE;
-          key = evento.keyboard.keycode;
-        }
-
-        if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
-        {
-          ktype = KEYDOWN_TYPE;
-          key = evento.keyboard.keycode;
-
-          if (key == ALLEGRO_KEY_ESCAPE)
-          {
-            if (game_render_state == GAME_MAP)
-            {
-              game_render_state = GAME_RAYCAST;
-            }
-            else
-            {
-              game_render_state = GAME_MAP;
-            }
-          }
-        }
-
-        byte = encodeKey(ktype, key);
-
-        // Check confirmation byte
-        if (byte & CONFIRMATION_BIT)
-        {
-          //TODO: check server's response
-          sendMsgToServer((void *)&byte, 1);
+          game_render_state = GAME_MAP;
         }
       }
+    }
 
+    byte = encodeKey(ktype, key);
 
+    // Check confirmation byte
+    if (byte & CONFIRMATION_BIT)
+    {
+      //TODO: check server's response
+      sendMsgToServer((void *)&byte, 1);
+    }
+  }
 }
 
-int main() {
+int main()
+{
 
   srand(time(NULL));
   //assertConnection();
@@ -603,11 +611,10 @@ int main() {
           }
           if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
           {
-            state = waiting_for_players;
-            printf("IP: %s\n",str);
-
-            assertConnection();
-
+            //assertConnection();
+            if(tryConnect() == SERVER_UP) state = waiting_for_players;
+            
+            printf("IP: %s\n", str);
           }
         }
       }
@@ -619,50 +626,54 @@ int main() {
       al_draw_text(font_ip, al_map_rgb(255, 255, 255), WIDTH - (strlen(str) * 15) - 333, HEIGHT - 233, ALLEGRO_ALIGN_LEFT, str);
       al_draw_text(font_ip, al_map_rgb(235, 10, 0), WIDTH - (strlen(str) * 15) - 330, HEIGHT - 230, ALLEGRO_ALIGN_LEFT, str);
       break;
-    
+
     case tela_vitoria:
-          if(GState.jaquin != GState.id && GState.ended==1) {
-            al_clear_to_color(al_map_rgb(0, 0, 255));
-            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce ganhou!");
+      if (GState.jaquin != GState.id && GState.ended == 1)
+      {
+        al_clear_to_color(al_map_rgb(0, 0, 255));
+        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
+      }
 
-          }
+      if (GState.jaquin == GState.id && GState.ended == 1)
+      {
+        al_clear_to_color(al_map_rgb(255, 0, 0));
+        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
+      }
 
-          if(GState.jaquin == GState.id && GState.ended==1) {
-            al_clear_to_color(al_map_rgb(255, 0, 0));
-            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce perdeu!");
-          }
+      if (GState.jaquin == GState.id && GState.ended == 2)
+      {
+        al_clear_to_color(al_map_rgb(0, 0, 255));
+        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
+      }
 
-          if(GState.jaquin == GState.id && GState.ended==2) {
-            al_clear_to_color(al_map_rgb(0, 0, 255));
-            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce ganhou!");
+      if (GState.jaquin != GState.id && GState.ended == 2)
+      {
+        al_clear_to_color(al_map_rgb(255, 0, 0));
+        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
+      }
 
-          }
-
-          if(GState.jaquin != GState.id && GState.ended==2) {
-            al_clear_to_color(al_map_rgb(255, 0, 0));
-            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce perdeu!");
-          }
-
-      break; 
+      break;
 
     case waiting_for_players:
       al_clear_to_color(al_map_rgb(0, 0, 255));
 
       char text[100];
 
-      sprintf(text, "Esperando outros jogares (%d)...",(int)GState.n_players);
+      sprintf(text, "Esperando outros jogares (%d)...", (int)GState.n_players);
 
       al_draw_text(font_op, al_map_rgb(255, 255, 255),
-       10, 0, 0, text);
+                   10, 0, 0, text);
 
       recvMsgFromServer(&GState, DONT_WAIT);
 
-      if(GState.jaquin == GState.id) {
+      if (GState.jaquin == GState.id)
+      {
         al_draw_text(font_op, al_map_rgb(255, 255, 0),
-       150, 250, 0, "Voce é o jaquin! pressione espaço para continuar: (quando quiser)");
+                     150, 250, 0, "Voce é o jaquin! pressione espaço para continuar: (quando quiser)");
       }
 
-      if(GState.started) {
+      if (GState.started)
+      {
         state = jogar;
       }
 
@@ -673,7 +684,8 @@ int main() {
       //
       recvMsgFromServer(&GState, DONT_WAIT);
 
-      if(GState.ended) {
+      if (GState.ended)
+      {
         state = tela_vitoria;
       }
 
@@ -684,43 +696,40 @@ int main() {
       if (game_render_state == GAME_MAP)
       {
         draw_map(&GState);
-
       }
       else if (game_render_state == GAME_RAYCAST)
       {
-          float px = GState.players[GState.id].playerState.x;
-          float py = GState.players[GState.id].playerState.y;
-          float angle =  GState.players[GState.id].playerState.angle;
-          float dirX = cosf(angle), planeY = (RAIZ_3 * dirX/3);
-          float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY/3);
-          al_clear_to_color(al_map_rgb(0,0,0));
+        float px = GState.players[GState.id].playerState.x;
+        float py = GState.players[GState.id].playerState.y;
+        float angle = GState.players[GState.id].playerState.angle;
+        float dirX = cosf(angle), planeY = (RAIZ_3 * dirX / 3);
+        float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY / 3);
+        al_clear_to_color(al_map_rgb(0, 0, 0));
 
-          al_draw_filled_rectangle(0,0,WIDTH,HEIGHT/2,
-                        al_map_rgb(70,70,70));
+        al_draw_filled_rectangle(0, 0, WIDTH, HEIGHT / 2,
+                                 al_map_rgb(70, 70, 70));
 
-          al_draw_filled_rectangle(0,HEIGHT/2,WIDTH,HEIGHT,
-                        al_map_rgb(81,37,0));
+        al_draw_filled_rectangle(0, HEIGHT / 2, WIDTH, HEIGHT,
+                                 al_map_rgb(81, 37, 0));
 
-          rayCasting(px, py, dirX, dirY, planeX, planeY, &GState);
-
-          
+        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState);
       }
 
-      al_draw_rectangle(5,5,GState.conta,10,
-                        al_map_rgb(100,200,100),5);
+      al_draw_rectangle(5, 5, GState.conta, 10,
+                        al_map_rgb(100, 200, 100), 5);
 
-      al_draw_rectangle(5,25,GState.elapsed,30,
-                        al_map_rgb(200,200,100),5);
+      al_draw_rectangle(5, 25, GState.elapsed, 30,
+                        al_map_rgb(200, 200, 100), 5);
 
-      char txt[50]={};
-      sprintf(txt,"%G",GState.conta);
-      al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 35,0, txt);
-      sprintf(txt,"%d:%02d",(int)(GState.elapsed/60.0), (int)(GState.elapsed)%60);
-      al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 75,0, txt);
+      char txt[50] = {};
+      sprintf(txt, "%G", GState.conta);
+      al_draw_text(font_ip, al_map_rgb(50, 50, 50), 5, 35, 0, txt);
+      sprintf(txt, "%d:%02d", (int)(GState.elapsed / 60.0), (int)(GState.elapsed) % 60);
+      al_draw_text(font_ip, al_map_rgb(50, 50, 50), 5, 75, 0, txt);
 
-      if(GState.players[GState.id].playerState.froze) {
-        al_draw_text(font_ip, al_map_rgb(50, 200, 200),200, 75,0, "Congelou!");
-
+      if (GState.players[GState.id].playerState.froze)
+      {
+        al_draw_text(font_ip, al_map_rgb(50, 200, 200), 200, 75, 0, "Congelou!");
       }
 
       break;
