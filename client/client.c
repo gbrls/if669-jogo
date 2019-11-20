@@ -423,37 +423,46 @@ int main()
           }
         }
       }
-      switch (hovermenu)
+      if (hovermenu != jogarHover)
       {
-      case jogarHover:
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_jogar) - 233, HEIGHT - al_get_bitmap_height(botao_jogar) - 333, ALLEGRO_ALIGN_LEFT, "Jogar");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_jogar) - 230, HEIGHT - al_get_bitmap_height(botao_jogar) - 330, ALLEGRO_ALIGN_LEFT, "Jogar");
-        break;
-      case howPlayHover:
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_howPlay) - 163, HEIGHT - al_get_bitmap_height(botao_howPlay) - 253, ALLEGRO_ALIGN_LEFT, "Como Jogar");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_howPlay) - 160, HEIGHT - al_get_bitmap_height(botao_howPlay) - 250, ALLEGRO_ALIGN_LEFT, "Como Jogar");
-        break;
-      case contextoHover:
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
-        break;
-      case sairHover:
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_sair) - 253, HEIGHT - al_get_bitmap_height(botao_sair) - 103, ALLEGRO_ALIGN_LEFT, "Sair");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_sair) - 250, HEIGHT - al_get_bitmap_height(botao_sair) - 100, ALLEGRO_ALIGN_LEFT, "Sair");
-        break;
-      default:
         al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_jogar) - 233, HEIGHT - al_get_bitmap_height(botao_jogar) - 333, ALLEGRO_ALIGN_LEFT, "Jogar");
         al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_jogar) - 230, HEIGHT - al_get_bitmap_height(botao_jogar) - 330, ALLEGRO_ALIGN_LEFT, "Jogar");
+      }
+      else if (hovermenu == jogarHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_jogar) - 233, HEIGHT - al_get_bitmap_height(botao_jogar) - 333, ALLEGRO_ALIGN_LEFT, "Jogar");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_jogar) - 230, HEIGHT - al_get_bitmap_height(botao_jogar) - 330, ALLEGRO_ALIGN_LEFT, "Jogar");
+      }
 
+      if (hovermenu != howPlayHover)
+      {
         al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_howPlay) - 163, HEIGHT - al_get_bitmap_height(botao_howPlay) - 253, ALLEGRO_ALIGN_LEFT, "Como Jogar");
         al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_howPlay) - 160, HEIGHT - al_get_bitmap_height(botao_howPlay) - 250, ALLEGRO_ALIGN_LEFT, "Como Jogar");
-
+      }
+      else if (hovermenu == howPlayHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_howPlay) - 163, HEIGHT - al_get_bitmap_height(botao_howPlay) - 253, ALLEGRO_ALIGN_LEFT, "Como Jogar");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_howPlay) - 160, HEIGHT - al_get_bitmap_height(botao_howPlay) - 250, ALLEGRO_ALIGN_LEFT, "Como Jogar");
+      }
+      if (hovermenu != contextoHover)
+      {
         al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
         al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
-
+      }
+      else if (hovermenu == contextoHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
+      }
+      if (hovermenu != sairHover)
+      {
         al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_sair) - 253, HEIGHT - al_get_bitmap_height(botao_sair) - 103, ALLEGRO_ALIGN_LEFT, "Sair");
         al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_sair) - 250, HEIGHT - al_get_bitmap_height(botao_sair) - 100, ALLEGRO_ALIGN_LEFT, "Sair");
-        break;
+      }
+      else if (hovermenu == sairHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_sair) - 253, HEIGHT - al_get_bitmap_height(botao_sair) - 103, ALLEGRO_ALIGN_LEFT, "Sair");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_sair) - 250, HEIGHT - al_get_bitmap_height(botao_sair) - 100, ALLEGRO_ALIGN_LEFT, "Sair");
       }
       break;
     case jogar_IP:
