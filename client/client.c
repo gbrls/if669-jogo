@@ -8,8 +8,11 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
-
+#include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 
 #define MSG_MAX_SIZE 350
@@ -20,36 +23,72 @@
 //#define RAIZ_3 1.2
 char game[120];
 
-ALLEGRO_DISPLAY * window = NULL;
-ALLEGRO_EVENT_QUEUE *fila_eventos=NULL;
-enum GameRenderState game_render_state =GAME_MAP;
+ALLEGRO_TIMEOUT timeout;
 
-enum conn_ret_t tryConnect() {
-  char server_ip[30];
-  printf("Please enter the server IP: ");
-  scanf(" %s", server_ip);
-  getchar();
-  return connectToServer(server_ip);
+ALLEGRO_EVENT evento;
+
+ALLEGRO_DISPLAY *janela = NULL;
+ALLEGRO_MONITOR_INFO info;
+
+ALLEGRO_BITMAP *background = NULL;
+
+ALLEGRO_FONT *font = NULL;
+ALLEGRO_FONT *font_ip = NULL;
+ALLEGRO_FONT *font_op = NULL;
+
+ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
+
+ALLEGRO_BITMAP *botao_sair = NULL;
+ALLEGRO_BITMAP *botao_jogar = NULL;
+ALLEGRO_BITMAP *botao_contexto = NULL;
+ALLEGRO_BITMAP *botao_howPlay = NULL;
+
+enum GameRenderState game_render_state = GAME_MAP;
+enum estadoDoJogo state = menu;
+enum Hover hovermenu = nada;
+
+int res_x_comp, res_y_comp;
+float mouse_X, mouse_Y;
+char str[12] = "0";
+
+/***************************************************************************************************************/
+/***************************************************************************************************************/
+/***************************************************************************************************************/
+
+enum conn_ret_t tryConnect()
+{
+  return connectToServer(str);
 }
 
-void assertConnection() {
+void assertConnection()
+{
   enum conn_ret_t ans = tryConnect();
-  while (ans != SERVER_UP) {
-    if (ans == SERVER_DOWN) {
+  while (ans != SERVER_UP)
+  {
+    if (ans == SERVER_DOWN)
+    {
       puts("Server is down!");
-    } else if (ans == SERVER_FULL) {
+    }
+    else if (ans == SERVER_FULL)
+    {
       puts("Server is full!");
-    } else if (ans == SERVER_CLOSED) {
+    }
+    else if (ans == SERVER_CLOSED)
+    {
       puts("Server is closed for new connections!");
-    } else {
+    }
+    else
+    {
       puts("Server didn't respond to connection!");
     }
     printf("Want to try again? [Y/n] ");
     int res;
-    while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
+    while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n')
+    {
       puts("anh???");
     }
-    if (res == 'n') {
+    if (res == 'n')
+    {
       exit(EXIT_SUCCESS);
     }
     ans = tryConnect();
@@ -58,46 +97,189 @@ void assertConnection() {
   ///printf("Please enter your login (limit = %d): ", LOGIN_MAX_SIZE);
   ///scanf(" %[^\n]", login);
   ///getchar();
-  for(int i=0;i<LOGIN_MAX_SIZE;i++){
-    login[i]=rand()%256;
+  for (int i = 0; i < LOGIN_MAX_SIZE; i++)
+  {
+    login[i] = rand() % 256;
   }
   int len = (int)strlen(login);
   sendMsgToServer(login, len + 1);
 }
 
-int inicializar() {
-    if(!al_init()){
-        fprintf(stderr, "Falha ao abrir biblioteca allegro\n");
-        return 0;
-    }
-    if(!al_init_primitives_addon()){
-        fprintf(stderr, "Falha ao abrir biblioteca de primitivas\n");
-        return 0;
-    }
+int inicializar()
+{
+  printf("Inicializando allegro\n");
+  if (!al_init())
+  {
+    printf("Falha ao abrir biblioteca allegro\n");
+    return 0;
+  }
+  printf("Inicializando allegro primitivas\n");
+  if (!al_init_primitives_addon())
+  {
+    printf("Falha ao abrir biblioteca de primitivas\n");
+    return 0;
+  }
+  printf("Inicializando allegro imagem\n");
+  if (!al_init_image_addon())
+  {
+    printf("Falha ao abrir biblioteca de imagem");
+    return 0;
+  }
 
+  printf("Inicializando allegro font\n");
+  if (!al_init_font_addon())
+  {
+    printf("Falha ao abrir biblioteca da fonte");
+    return 0;
+  }
 
-    if (!al_install_keyboard()){
-        fprintf(stderr, "Falha ao inicializar o teclado.\n");
-        return 0;
-    }
+  printf("Inicializando allegro ttf\n");
+  if (!al_init_ttf_addon())
+  {
+    printf("Falha ao abrir biblioteca de ttf");
+    return 0;
+  }
 
-    window = al_create_display(WIDTH, HEIGHT);
-    if(!window){
-        printf("Falha ao criar janela\n");
-        return 0;
-    }
+  printf("Inicializando teclado\n");
+  if (!al_install_keyboard())
+  {
+    printf("Falha ao inicializar o teclado.\n");
+    return 0;
+  }
+  printf("Inicializando mouse\n");
+  if (!al_install_mouse())
+  {
+    printf("Falha ao inicializar o mouse.\n");
+    return 0;
+  }
 
-    fila_eventos=al_create_event_queue();
-    if(!fila_eventos){
-        fprintf(stderr, "Falha ao criar fila de eventos.\n");
-        al_destroy_display(window);
-        return 0;
-    }
+  //Deixar em tela inteira
+  al_get_monitor_info(0, &info);
+  res_x_comp = info.x2 - info.x1;
+  res_y_comp = info.y2 - info.y1;
+  al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+  printf("Criando janela\n");
+  janela = al_create_display(res_x_comp, res_y_comp);
+  if (!janela)
+  {
+    printf("Erro ao inicializar Janela");
+    return 0;
+  }
+  float red_x = res_x_comp / (float)WIDTH;
+  float red_y = res_y_comp / (float)HEIGHT;
 
+  mouse_X = (float)WIDTH / res_x_comp;
+  mouse_Y = (float)HEIGHT / res_y_comp;
 
-    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    al_register_event_source(fila_eventos, al_get_display_event_source(window));
-    return 1;
+  ALLEGRO_TRANSFORM transformar;
+  al_identity_transform(&transformar);
+  al_scale_transform(&transformar, red_x, red_y);
+  al_use_transform(&transformar);
+  printf("%i, %i\n", res_x_comp, res_y_comp);
+  // Atribui o cursor padrão do sistema para ser usado
+  printf("Atribuindo cursor\n");
+  if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
+  {
+    printf("Falha ao atribuir ponteiro do mouse.\n");
+    al_destroy_display(janela);
+    al_destroy_font(font_op);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_bitmap(background);
+    return -1;
+  }
+
+  fila_eventos = al_create_event_queue();
+  if (!fila_eventos)
+  {
+    printf("Falha ao criar fila de eventos.\n");
+    al_destroy_display(janela);
+    return 0;
+  }
+
+  al_register_event_source(fila_eventos, al_get_mouse_event_source());
+  al_register_event_source(fila_eventos, al_get_keyboard_event_source());
+  al_register_event_source(fila_eventos, al_get_display_event_source(janela));
+
+  printf("carregando imagens\n");
+  background = al_load_bitmap("assets/img/menu.png");
+
+  if (!background)
+  {
+    al_destroy_display(janela);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_font(font_op);
+    printf("Erro ao carregar a imagem de background");
+    return -1;
+  }
+
+  printf("Carregando fontes\n");
+  font = al_load_font("assets/fonts/PixelBreack.ttf", 100, 0);
+  font_op = al_load_font("assets/fonts/PixelBreack.ttf", 50, 0);
+  font_ip = al_load_font("assets/fonts/Symtext.ttf", 50, 0);
+
+  // Alocamos o botão Jogar
+  botao_jogar = al_create_bitmap(140, 60);
+  if (!botao_jogar)
+  {
+    printf("Falha ao criar botão de jogar.\n");
+    al_destroy_display(janela);
+    al_destroy_font(font_op);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_bitmap(background);
+    return -1;
+  }
+
+  // Alocamos o botão Como Jogar
+  botao_howPlay = al_create_bitmap(280, 55);
+  if (!botao_howPlay)
+  {
+    printf("Falha ao criar botão de Como jogar.\n");
+    al_destroy_display(janela);
+    al_destroy_font(font_op);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_bitmap(background);
+    al_destroy_bitmap(botao_jogar);
+    return -1;
+  }
+
+  // Alocamos o botão Contexto
+  botao_contexto = al_create_bitmap(210, 55);
+  if (!botao_contexto)
+  {
+    printf("Falha ao criar botão de contexto.\n");
+    al_destroy_display(janela);
+    al_destroy_font(font_op);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_bitmap(background);
+    al_destroy_bitmap(botao_jogar);
+    al_destroy_bitmap(botao_howPlay);
+    return -1;
+  }
+
+  // Alocamos o botão para fechar a aplicação
+  botao_sair = al_create_bitmap(100, 50);
+  if (!botao_jogar)
+  {
+    printf("Falha ao criar botão de saída.\n");
+    al_destroy_display(janela);
+    al_destroy_font(font_op);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_bitmap(background);
+    al_destroy_bitmap(botao_jogar);
+    al_destroy_bitmap(botao_howPlay);
+    al_destroy_bitmap(botao_contexto);
+    return -1;
+  }
+
+  al_set_window_title(janela, "Jacquin's Hell");
+
+  return 1;
 }
 
 void draw_map(GameState* state) {
@@ -143,72 +325,295 @@ void draw_map(GameState* state) {
               }
             }
 }
+}
 
-int main(){
+int main()
+{
 
-    srand(time(NULL));
-    assertConnection();
+  srand(time(NULL));
+  //assertConnection();
 
-    if(!inicializar()){
-        return -1;
-    }
+  if (!inicializar())
+  {
+    printf("Falha ao inicializar\n");
+    return -1;
+  }
 
-    int sair=0;
+  printf("inicializado!");
+  while (1)
+  {
+    switch (state)
+    {
+    case menu:
 
-    while(!sair){
+      //printf("Menu\n");
 
-        ALLEGRO_EVENT evento;
-        ALLEGRO_TIMEOUT timeout;
-        al_init_timeout(&timeout, 0.020);
+      /***************************************************************************************************************/
 
-        if(al_wait_for_event_until(fila_eventos, &evento, &timeout)){
-            if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-                sair=1;
-            }
+      // colore o fundo
+      al_clear_to_color(al_map_rgb(255, 255, 255));
 
-            unsigned char byte=0;
-            int ktype=0, key=0;
+      /***************************************************************************************************************/
 
-            if(evento.type == ALLEGRO_EVENT_KEY_UP){
-                ktype=KEYUP_TYPE;
-                key=evento.keyboard.keycode;
-            }
+      // background
+      al_draw_bitmap(background, 0, 0, 0);
 
-            if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
-                ktype=KEYDOWN_TYPE;
-                key=evento.keyboard.keycode;
+      /***************************************************************************************************************/
 
-                if(key==ALLEGRO_KEY_ESCAPE){
-                    if(game_render_state==GAME_MAP) {
-                        game_render_state=GAME_RAYCAST;
-                    } else {
-                        game_render_state=GAME_MAP;
-                    }
-                }
-            }
+      // Titulo
+      al_draw_text(font, al_map_rgb(255, 255, 255), WIDTH - (WIDTH / 4.0), HEIGHT / 7.0, ALLEGRO_ALIGN_CENTER, "Jacquin's Hell");
+      al_draw_text(font, al_map_rgb(200, 0, 0), (WIDTH - (WIDTH / 4.0)) - 3, (HEIGHT / 7.0) - 3, ALLEGRO_ALIGN_CENTER, "Jacquin's Hell");
 
-            byte = encodeKey(ktype, key);
+      /***************************************************************************************************************/
 
-            // Check confirmation byte
-            if(byte&CONFIRMATION_BIT) {
-                //TODO: check server's response
-                sendMsgToServer((void*)&byte, 1);
-            }
+      // Verificamos se há eventos na fila
+      while (!al_is_event_queue_empty(fila_eventos))
+      {
+
+        al_wait_for_event(fila_eventos, &evento);
+
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
         }
 
-        GameState state;
-        //ClientState players[MAX_CHAT_CLIENTS];
-        int ret = recvMsgFromServer(&state, DONT_WAIT);
+        // Hover
+        if (evento.type == ALLEGRO_EVENT_MOUSE_AXES)
+        {
+          // Hover no botao Jogar
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_jogar) - 233 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 233 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 333 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_jogar) - 333)
+          {
+            hovermenu = jogarHover;
+          }
+          // Hover no botao como Jogar
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_howPlay) - 163 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 163 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 253 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_howPlay) - 253)
+          {
+            hovermenu = howPlayHover;
+          }
+          // Hover no botao como Contexto
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_contexto) - 203 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 203 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 173 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_contexto) - 173)
+          {
+            hovermenu = contextoHover;
+          }
+          // Hover no botao Sair
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_sair) - 253 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 253 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 103 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_sair) - 103)
+          {
+            hovermenu = sairHover;
+          }
+        }
+        /***************************************************************************************************************/
+        // Clicado
+        else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
+        {
+          // clicou no botão jogar
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_jogar) - 233 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 233 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 333 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_jogar) - 333)
+          {
+            printf("Jogar\n");
+            state = jogar_IP;
+          }
+          //clicou no botão Como Jogar
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_howPlay) - 163 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 163 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 253 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_howPlay) - 253)
+          {
+            printf("Como Jogar\n");
+            state = HowPlay;
+          }
+          // clicou no botão contexto
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_contexto) - 203 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 203 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 173 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_contexto) - 173)
+          {
+            printf("Contexto\n");
+            state = contexto;
+          }
+          //clicou no botão sair
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_sair) - 253 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 253 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 103 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_sair) - 103)
+          {
+            state = sair;
+          }
+        }
+      }
+      if (hovermenu != jogarHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_jogar) - 233, HEIGHT - al_get_bitmap_height(botao_jogar) - 333, ALLEGRO_ALIGN_LEFT, "Jogar");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_jogar) - 230, HEIGHT - al_get_bitmap_height(botao_jogar) - 330, ALLEGRO_ALIGN_LEFT, "Jogar");
+      }
+      else if (hovermenu == jogarHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_jogar) - 233, HEIGHT - al_get_bitmap_height(botao_jogar) - 333, ALLEGRO_ALIGN_LEFT, "Jogar");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_jogar) - 230, HEIGHT - al_get_bitmap_height(botao_jogar) - 330, ALLEGRO_ALIGN_LEFT, "Jogar");
+      }
 
-        if(ret == NO_MESSAGE) {
+      if (hovermenu != howPlayHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_howPlay) - 163, HEIGHT - al_get_bitmap_height(botao_howPlay) - 253, ALLEGRO_ALIGN_LEFT, "Como Jogar");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_howPlay) - 160, HEIGHT - al_get_bitmap_height(botao_howPlay) - 250, ALLEGRO_ALIGN_LEFT, "Como Jogar");
+      }
+      else if (hovermenu == howPlayHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_howPlay) - 163, HEIGHT - al_get_bitmap_height(botao_howPlay) - 253, ALLEGRO_ALIGN_LEFT, "Como Jogar");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_howPlay) - 160, HEIGHT - al_get_bitmap_height(botao_howPlay) - 250, ALLEGRO_ALIGN_LEFT, "Como Jogar");
+      }
+      if (hovermenu != contextoHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
+      }
+      else if (hovermenu == contextoHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
+      }
+      if (hovermenu != sairHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_sair) - 253, HEIGHT - al_get_bitmap_height(botao_sair) - 103, ALLEGRO_ALIGN_LEFT, "Sair");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_sair) - 250, HEIGHT - al_get_bitmap_height(botao_sair) - 100, ALLEGRO_ALIGN_LEFT, "Sair");
+      }
+      else if (hovermenu == sairHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_sair) - 253, HEIGHT - al_get_bitmap_height(botao_sair) - 103, ALLEGRO_ALIGN_LEFT, "Sair");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_sair) - 250, HEIGHT - al_get_bitmap_height(botao_sair) - 100, ALLEGRO_ALIGN_LEFT, "Sair");
+      }
+      break;
+    case jogar_IP:
 
-        } else {
+      /***************************************************************************************************************/
+
+      // colore o fundo
+      al_clear_to_color(al_map_rgb(255, 255, 255));
+
+      /***************************************************************************************************************/
+
+      // background
+      al_draw_bitmap(background, 0, 0, 0);
+
+      /***************************************************************************************************************/
+
+      // Titulo
+      al_draw_text(font, al_map_rgb(255, 255, 255), WIDTH - (WIDTH / 4.0), HEIGHT / 7.0, ALLEGRO_ALIGN_CENTER, "Jacquin's Hell");
+      al_draw_text(font, al_map_rgb(200, 0, 0), (WIDTH - (WIDTH / 4.0)) - 3, (HEIGHT / 7.0) - 3, ALLEGRO_ALIGN_CENTER, "Jacquin's Hell");
+
+      /***************************************************************************************************************/
+
+      // Verificamos se há eventos na fila
+      while (!al_is_event_queue_empty(fila_eventos))
+      {
+
+        al_wait_for_event(fila_eventos, &evento);
+
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
+        }
+        // Tecla pressionada
+        if (evento.type == ALLEGRO_EVENT_KEY_CHAR)
+        {
+          if ((evento.keyboard.unichar >= '0' && evento.keyboard.unichar <= '9' || evento.keyboard.unichar == '.'))
+          {
+            char key[] = {evento.keyboard.unichar};
+            strcat(str, key);
+          }
+          if (evento.keyboard.keycode == ALLEGRO_KEY_BACKSPACE && strlen(str) != 0)
+          {
+            str[strlen(str) - 1] = '\0';
+          }
+          if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
+          {
+            state = jogar;
+          }
+        }
+      }
+      /***************************************************************************************************************/
+
+      al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 503, HEIGHT - 333, ALLEGRO_ALIGN_LEFT, "Coloque seu IP:");
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 500, HEIGHT - 330, ALLEGRO_ALIGN_LEFT, "Coloque seu IP:");
+
+      al_draw_text(font_ip, al_map_rgb(255, 255, 255), WIDTH - (strlen(str) * 15) - 333, HEIGHT - 233, ALLEGRO_ALIGN_LEFT, str);
+      al_draw_text(font_ip, al_map_rgb(235, 10, 0), WIDTH - (strlen(str) * 15) - 330, HEIGHT - 230, ALLEGRO_ALIGN_LEFT, str);
+      break;
+    case jogar:
+
+      al_init_timeout(&timeout, 0.020);
+
+      if (al_wait_for_event_until(fila_eventos, &evento, &timeout))
+      {
+
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
+        }
+
+        unsigned char byte = 0;
+        int ktype = 0, key = 0;
+
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
+        }
+
+        if (evento.type == ALLEGRO_EVENT_KEY_UP)
+        {
+          ktype = KEYUP_TYPE;
+          key = evento.keyboard.keycode;
+        }
+
+        if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+        {
+          ktype = KEYDOWN_TYPE;
+          key = evento.keyboard.keycode;
+
+          if (key == ALLEGRO_KEY_ESCAPE)
+          {
+            if (game_render_state == GAME_MAP)
+            {
+              game_render_state = GAME_RAYCAST;
+            }
+            else
+            {
+              game_render_state = GAME_MAP;
+            }
+          }
 
         }
 
-        al_clear_to_color(al_map_rgb(0,0,0));
+        byte = encodeKey(ktype, key);
 
-        if(game_render_state==GAME_MAP) {
+        // Check confirmation byte
+        if (byte & CONFIRMATION_BIT)
+        {
+          //TODO: check server's response
+          sendMsgToServer((void *)&byte, 1);
+        }
+      }
+
+      GameState state;
+      //ClientState players[MAX_CHAT_CLIENTS];
+      int ret = recvMsgFromServer(&state, DONT_WAIT);
+
+      al_clear_to_color(al_map_rgb(0, 0, 0));
+
+      if(game_render_state==GAME_MAP) {
             draw_map(&state);
         } else if(game_render_state==GAME_RAYCAST) {
 
@@ -235,5 +640,5 @@ int main(){
         al_flip_display();
     }
 
-    return 0;
+  return 0;
 }
