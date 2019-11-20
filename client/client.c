@@ -47,7 +47,7 @@ enum estadoDoJogo state = menu;
 enum Hover hovermenu;
 
 int res_x_comp, res_y_comp;
-char str[12] = {};
+char str[12] = "0";
 
 /***************************************************************************************************************/
 /***************************************************************************************************************/
@@ -105,40 +105,46 @@ void assertConnection()
 
 int inicializar()
 {
+  printf("Inicializando allegro\n");
   if (!al_init())
   {
     printf("Falha ao abrir biblioteca allegro\n");
     return 0;
   }
+  printf("Inicializando allegro primitivas\n");
   if (!al_init_primitives_addon())
   {
     printf("Falha ao abrir biblioteca de primitivas\n");
     return 0;
   }
-
+  printf("Inicializando allegro imagem\n");
   if (!al_init_image_addon())
   {
     printf("Falha ao abrir biblioteca de imagem");
     return 0;
   }
 
+  printf("Inicializando allegro font\n");
   if (!al_init_font_addon())
   {
     printf("Falha ao abrir biblioteca da fonte");
     return 0;
   }
 
+  printf("Inicializando allegro ttf\n");
   if (!al_init_ttf_addon())
   {
     printf("Falha ao abrir biblioteca de ttf");
     return 0;
   }
 
+  printf("Inicializando teclado\n");
   if (!al_install_keyboard())
   {
     printf("Falha ao inicializar o teclado.\n");
     return 0;
   }
+  printf("Inicializando mouse\n");
   if (!al_install_mouse())
   {
     printf("Falha ao inicializar o mouse.\n");
@@ -150,6 +156,7 @@ int inicializar()
   res_x_comp = info.x2 - info.x1;
   res_y_comp = info.y2 - info.y1;
   al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+  printf("Criando janela\n");
   janela = al_create_display(res_x_comp, res_y_comp);
   if (!janela)
   {
@@ -164,6 +171,7 @@ int inicializar()
   al_use_transform(&transformar);
 
   // Atribui o cursor padrão do sistema para ser usado
+  printf("Atribuindo cursor\n");
   if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
   {
     fprintf(stderr, "Falha ao atribuir ponteiro do mouse.\n");
@@ -187,6 +195,7 @@ int inicializar()
   al_register_event_source(fila_eventos, al_get_keyboard_event_source());
   al_register_event_source(fila_eventos, al_get_display_event_source(janela));
 
+  printf("carregando imagens\n");
   background = al_load_bitmap("assets/img/menu.png");
 
   if (!background)
@@ -199,6 +208,7 @@ int inicializar()
     return -1;
   }
 
+  printf("Carregando fontes\n");
   font = al_load_font("assets/fonts/PixelBreack.ttf", 100, 0);
   font_op = al_load_font("assets/fonts/PixelBreack.ttf", 50, 0);
   font_ip = al_load_font("assets/fonts/Symtext.ttf", 50, 0);
@@ -295,12 +305,15 @@ int main()
 {
 
   srand(time(NULL));
-  assertConnection();
+  //assertConnection();
 
   if (!inicializar())
   {
+    printf("Falha ao inicializar\n");
     return -1;
   }
+
+  printf("inicializado!");
   while (1)
   {
     switch (state)
