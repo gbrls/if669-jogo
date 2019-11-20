@@ -346,6 +346,10 @@ int main()
 
         al_wait_for_event(fila_eventos, &evento);
 
+        if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+          state = sair;
+        }
+
         // Hover
         if (evento.type == ALLEGRO_EVENT_MOUSE_AXES)
         {
@@ -526,6 +530,10 @@ int main()
 
         unsigned char byte = 0;
         int ktype = 0, key = 0;
+
+        if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+          state = sair;
+        }
 
         if (evento.type == ALLEGRO_EVENT_KEY_UP)
         {
