@@ -47,7 +47,7 @@ enum estadoDoJogo state = menu;
 enum Hover hovermenu = nada;
 
 int res_x_comp, res_y_comp;
-float red_x, red_y;
+float mouse_X, mouse_Y;
 char str[12] = "0";
 
 /***************************************************************************************************************/
@@ -164,13 +164,17 @@ int inicializar()
     printf("Erro ao inicializar Janela");
     return 0;
   }
-  red_x = res_x_comp / (float)WIDTH;
-  red_y = res_y_comp / (float)HEIGHT;
+  float red_x = res_x_comp / (float)WIDTH;
+  float red_y = res_y_comp / (float)HEIGHT;
+
+  mouse_X = (float)WIDTH / res_x_comp;
+  mouse_Y = (float)HEIGHT / res_y_comp;
+
   ALLEGRO_TRANSFORM transformar;
   al_identity_transform(&transformar);
   al_scale_transform(&transformar, red_x, red_y);
   al_use_transform(&transformar);
-
+  printf("%i, %i\n", res_x_comp, res_y_comp);
   // Atribui o cursor padrão do sistema para ser usado
   printf("Atribuindo cursor\n");
   if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
@@ -356,34 +360,34 @@ int main()
         if (evento.type == ALLEGRO_EVENT_MOUSE_AXES)
         {
           // Hover no botao Jogar
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_jogar) - 233 &&
-              (red_x * evento.mouse.x) <= WIDTH - 233 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 333 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_jogar) - 333)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_jogar) - 233 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 233 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 333 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_jogar) - 333)
           {
             hovermenu = jogarHover;
           }
           // Hover no botao como Jogar
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_howPlay) - 163 &&
-              (red_x * evento.mouse.x) <= WIDTH - 163 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 253 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_howPlay) - 253)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_howPlay) - 163 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 163 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 253 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_howPlay) - 253)
           {
             hovermenu = howPlayHover;
           }
           // Hover no botao como Contexto
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_contexto) - 203 &&
-              (red_x * evento.mouse.x) <= WIDTH - 203 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 173 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_contexto) - 173)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_contexto) - 203 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 203 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 173 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_contexto) - 173)
           {
             hovermenu = contextoHover;
           }
           // Hover no botao Sair
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_sair) - 253 &&
-              (red_x * evento.mouse.x) <= WIDTH - 253 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 103 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_sair) - 103)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_sair) - 253 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 253 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 103 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_sair) - 103)
           {
             hovermenu = sairHover;
           }
@@ -393,37 +397,37 @@ int main()
         else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
         {
           // clicou no botão jogar
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_jogar) - 233 &&
-              (red_x * evento.mouse.x) <= WIDTH - 233 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 333 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_jogar) - 333)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_jogar) - 233 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 233 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 333 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_jogar) - 333)
           {
             printf("Jogar\n");
             state = jogar_IP;
           }
           //clicou no botão Como Jogar
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_howPlay) - 163 &&
-              (red_x * evento.mouse.x) <= WIDTH - 163 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 253 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_howPlay) - 253)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_howPlay) - 163 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 163 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 253 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_howPlay) - 253)
           {
             printf("Como Jogar\n");
             state = HowPlay;
           }
           // clicou no botão contexto
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_contexto) - 203 &&
-              (red_x * evento.mouse.x) <= WIDTH - 203 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 173 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_contexto) - 173)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_contexto) - 203 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 203 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 173 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_contexto) - 173)
           {
             printf("Contexto\n");
             state = contexto;
           }
           //clicou no botão sair
-          if ((red_x * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_sair) - 253 &&
-              (red_x * evento.mouse.x) <= WIDTH - 253 &&
-              (red_y * evento.mouse.y) <= HEIGHT - 103 &&
-              (red_y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_sair) - 103)
+          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_sair) - 253 &&
+              (mouse_X * evento.mouse.x) <= WIDTH - 253 &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 103 &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - al_get_bitmap_height(botao_sair) - 103)
           {
             state = sair;
           }
