@@ -39,6 +39,23 @@ enum GameRenderState {
     GAME_MAP,
     GAME_RAYCAST,
 };
+enum estadoDoJogo
+{
+    menu,
+    jogar,
+    jogar_IP,
+    HowPlay,
+    contexto,
+    sair,
+    nada,
+};
+enum Hover
+{
+    sairHover,
+    jogarHover,
+    contextoHover,
+    howPlayHover,
+};
 
 extern unsigned char GameMap[MAP_WIDTH][MAP_HEIGHT];
 
