@@ -629,7 +629,7 @@ int main() {
 
       if(GState.jaquin == GState.id) {
         al_draw_text(font_op, al_map_rgb(255, 255, 0),
-       150, 250, 0, "Voce é o jaquin! ehehehe");
+       150, 250, 0, "Voce é o jaquin! pressione espaço para continuar: (quando quiser)");
       }
 
       if(GState.started) {
