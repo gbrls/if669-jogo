@@ -314,13 +314,14 @@ int main()
   }
 
   printf("inicializado!");
-  while (1)
+  int jogo_esta_aberto = 1;
+  while (jogo_esta_aberto)
   {
     switch (state)
     {
     case menu:
 
-      //printf("Menu\n");
+      //  printf("Menu\n");
 
       /***************************************************************************************************************/
 
@@ -345,6 +346,10 @@ int main()
       {
         ALLEGRO_EVENT evento;
         al_wait_for_event(fila_eventos, &evento);
+        if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+          //jogo_esta_aberto=0;
+          state = sair;
+        }
 
         // Hover
         if (evento.type == ALLEGRO_EVENT_MOUSE_AXES)
@@ -605,6 +610,7 @@ int main()
       break;
     case sair:
       // Desaloca os recursos utilizados na aplicação
+      printf("Fechando jogo\n");
       al_destroy_display(janela);
       al_destroy_event_queue(fila_eventos);
       al_destroy_font(font_op);
