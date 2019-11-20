@@ -20,6 +20,7 @@
 #define LOGIN_MAX_SIZE 13
 #define HIST_MAX_SIZE 200
 #define RAIZ_3 1.7320508075688772
+//#define RAIZ_3 1.2
 char game[120];
 
 ALLEGRO_TIMEOUT timeout;
@@ -281,29 +282,49 @@ int inicializar()
   return 1;
 }
 
-void draw_map(unsigned int geladeiras)
-{
-  for (int i = 0; i < MAP_HEIGHT; i++)
-  {
-    for (int j = 0; j < MAP_WIDTH; j++)
-    {
-      if (GameMap[j + i * MAP_WIDTH] == '#')
-      {
-        al_draw_filled_rectangle(j * MAP_SCALE, i * MAP_SCALE,
-                                 (j + 1) * MAP_SCALE, (i + 1) * MAP_SCALE, al_map_rgb(255, 255, 255));
-      }
-      else if (GameMap[j + i * MAP_WIDTH] >= '0' && GameMap[j + i * MAP_WIDTH] <= '9')
-      {
-        int c = 0;
+void draw_map(GameState* state) {
 
-        if (geladeiras & (1 << (GameMap[j + i * MAP_WIDTH] - '0')))
-          c = 255;
+  float offx = state->players[state->id].playerState.x - WIDTH/2;
+  float offy = state->players[state->id].playerState.y - HEIGHT/2;
 
-        al_draw_filled_rectangle(j * MAP_SCALE, i * MAP_SCALE,
-                                 (j + 1) * MAP_SCALE, (i + 1) * MAP_SCALE, al_map_rgb(c, 255, 0));
-      }
+    for(int i=0;i<MAP_HEIGHT;i++){
+        for(int j=0;j<MAP_WIDTH;j++){
+            if(GameMap[j][i]=='#'){
+                al_draw_filled_rectangle(j*MAP_SCALE-offx,i*MAP_SCALE-offy,
+                        (j+1)*MAP_SCALE-offx,(i+1)*MAP_SCALE-offy,al_map_rgb(255,255,255));
+            } else if(GameMap[j][i]>='0'&&GameMap[j][i]<='9'){
+                int c=0;
+
+                if(state->geladeiras&(1<<(GameMap[j][i]-'0'))) c = 255;
+
+                al_draw_filled_rectangle(j*MAP_SCALE-offx,i*MAP_SCALE-offy,
+                        (j+1)*MAP_SCALE-offx,(i+1)*MAP_SCALE-offy,al_map_rgb(c,255,0));
+
+            }
+        }
     }
-  }
+
+     for(int i=0;i<MAX_CHAT_CLIENTS;i++){
+              if(state->players[i].active){
+
+                float px = state->players[i].playerState.x - offx;
+                float py = state->players[i].playerState.y - offy;
+                float angle =  state->players[i].playerState.angle;
+
+                al_draw_circle(px, py,
+                        PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
+
+                al_draw_line(px, py,
+                        px + cosf(angle)*PLAYER_VIEW_DIST,
+                        py + sinf(angle)*PLAYER_VIEW_DIST,
+                        al_map_rgb(255,0,0), 5);
+
+                al_draw_rectangle(5,5,state->conta,10,
+                        al_map_rgb(100,200,100),5);
+
+              }
+            }
+}
 }
 
 int main()
@@ -573,6 +594,7 @@ int main()
               game_render_state = GAME_MAP;
             }
           }
+
         }
 
         byte = encodeKey(ktype, key);
@@ -591,68 +613,32 @@ int main()
 
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
-      if (game_render_state == GAME_MAP)
-      {
-        draw_map(state.geladeiras);
+      if(game_render_state==GAME_MAP) {
+            draw_map(&state);
+        } else if(game_render_state==GAME_RAYCAST) {
 
-        for (int i = 0; i < MAX_CHAT_CLIENTS; i++)
-        {
-          if (state.players[i].active)
-          {
+          
 
-            float px = state.players[i].playerState.x;
-            float py = state.players[i].playerState.y;
-            float angle = state.players[i].playerState.angle;
+          float px = state.players[state.id].playerState.x;
+          float py = state.players[state.id].playerState.y;
+          float angle =  state.players[state.id].playerState.angle;
+          float dirX = cosf(angle), planeY = (RAIZ_3 * dirX/3);
+          float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY/3);
+          al_clear_to_color(al_map_rgb(0,0,0));
 
-            al_draw_circle(px, py,
-                           PLAYER_RADIUS, al_map_rgb(0, 0, 255), 10.0f);
+          al_draw_filled_rectangle(0,0,WIDTH,HEIGHT/2,
+                        al_map_rgb(70,70,70));
 
-            al_draw_line(px, py,
-                         px + cosf(angle) * PLAYER_VIEW_DIST,
-                         py + sinf(angle) * PLAYER_VIEW_DIST,
-                         al_map_rgb(255, 0, 0), 5);
+          al_draw_filled_rectangle(0,HEIGHT/2,WIDTH,HEIGHT,
+                        al_map_rgb(81,37,0));
 
-            al_draw_rectangle(5, 5, state.conta, 10,
-                              al_map_rgb(100, 200, 100), 5);
-          }
+          rayCasting(px, py, dirX, dirY, planeX, planeY, &state);
+
+          printf("Game: (%G,%G)\n",px,py);
         }
-      }
-      else if (game_render_state == GAME_RAYCAST)
-      {
-        float px = state.players[0].playerState.x;
-        float py = state.players[0].playerState.y;
-        float angle = state.players[0].playerState.angle;
-        float k = 0.5;
-        float dirX = 1.0 * cosf(angle), planeY = (RAIZ_3 * dirX) * k;
-        float dirY = 1.0 * sinf(angle), planeX = -(RAIZ_3 * dirY) * k;
-        al_clear_to_color(al_map_rgb(0, 0, 0));
-        rayCasting(px, py, dirX, dirY, planeX, planeY);
-      }
 
-      break;
-    case HowPlay:
-
-      break;
-    case contexto:
-
-      break;
-    case sair:
-      // Desaloca os recursos utilizados na aplicação
-      al_destroy_display(janela);
-      al_destroy_event_queue(fila_eventos);
-      al_destroy_font(font_op);
-      al_destroy_font(font);
-      al_destroy_font(font_ip);
-      al_destroy_bitmap(background);
-      al_destroy_bitmap(botao_jogar);
-      al_destroy_bitmap(botao_howPlay);
-      al_destroy_bitmap(botao_contexto);
-      al_destroy_bitmap(botao_sair);
-      return 0;
-      break;
+        al_flip_display();
     }
-    // Atualiza a tela
-    al_flip_display();
-  }
+
   return 0;
 }

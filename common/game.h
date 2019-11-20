@@ -35,6 +35,7 @@ typedef struct
     ClientState players[MAX_CHAT_CLIENTS];
     unsigned char geladeiras;
     double conta;
+    unsigned char id;
 } GameState;
 
 enum GameRenderState
@@ -60,6 +61,6 @@ enum Hover
     howPlayHover,
 };
 
-extern unsigned char GameMap[];
+extern unsigned char GameMap[MAP_WIDTH][MAP_HEIGHT];
 
 #endif

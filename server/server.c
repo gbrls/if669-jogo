@@ -20,12 +20,10 @@ int check_map_collision(float x, float y)
     int mx = x / (float)MAP_SCALE;
     int my = y / (float)MAP_SCALE;
 
-    if (GameMap[mx + my * MAP_WIDTH] != '.')
-    {
+    if(GameMap[mx][my]!='.'){
 
-        if (GameMap[mx + my * MAP_WIDTH] >= '0' && GameMap[mx + my * MAP_WIDTH] <= '9')
-        {
-            return (GameMap[mx + my * MAP_WIDTH] - '0') + 2;
+        if(GameMap[mx][my] >='0'&&GameMap[mx][my] <= '9'){
+            return  (GameMap[mx][my]-'0')+2;
         }
 
         return 1;
@@ -41,19 +39,17 @@ void toggle_geladeiras(float x, float y, float angle)
     //printf("%02.f, %02.f, %0.2f\n",x,y,angle);
     float nx = x, ny = y, step = 0.3;
 
-    while (((nx - x) * (nx - x) + (ny - y) * (ny - ny)) < PLAYER_VIEW_DIST * PLAYER_VIEW_DIST)
-    {
 
+    while(((nx-x)*(nx-x) + (ny-y)*(ny-y)) < PLAYER_VIEW_DIST*PLAYER_VIEW_DIST) {
         nx += cosf(angle) * step;
         ny += sinf(angle) * step;
 
-        int ret = check_map_collision(nx, ny);
-        if (ret >= 1)
-        {
-            if (ret > 1)
-            {
-                ret -= 2;
-                state.geladeiras ^= (1 << ret);
+
+        int ret = check_map_collision(nx,ny);
+        if(ret>=1) {
+            if(ret>1) {
+                ret-=2;
+                state.geladeiras^=(1<<ret);
             }
             return;
         }
@@ -65,28 +61,22 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new)
 {
 
     unsigned char nib;
-    if (new &KEY_BYTE_L)
-        nib = KEY_BYTE_L;
-    if (new &KEY_BYTE_R)
-        nib = KEY_BYTE_R;
-    if (new &KEY_BYTE_U)
-        nib = KEY_BYTE_U;
-    if (new &KEY_BYTE_D)
-        nib = KEY_BYTE_D;
-    if (new &KEY_BYTE_ACTION)
-        nib = KEY_BYTE_ACTION;
 
-    if (new &KEYDOWN_TYPE)
-    {
-        prev = prev | nib;
+    if(new&KEY_BYTE_L) nib = KEY_BYTE_L;
+    if(new&KEY_BYTE_R) nib = KEY_BYTE_R;
+    if(new&KEY_BYTE_U) nib = KEY_BYTE_U;
+    if(new&KEY_BYTE_D) nib = KEY_BYTE_D;
+    if(new&KEY_BYTE_ACTION) nib = KEY_BYTE_ACTION;
 
-        if (new &KEY_BYTE_ACTION)
-        {
-            toggle_geladeiras(state.players[id].playerState.x,
-                              state.players[id].playerState.y,
-                              state.players[id].playerState.angle);
-        }
-        //if(new&KEY_BYTE_ACTION) state.geladeiras^=0xff;
+    if(new&KEYDOWN_TYPE){
+       prev = prev|nib;
+
+       if(new&KEY_BYTE_ACTION) {
+           toggle_geladeiras(state.players[id].playerState.x,
+                   state.players[id].playerState.y,
+                   state.players[id].playerState.angle);
+       }
+       //if(new&KEY_BYTE_ACTION) state.geladeiras^=0xff;
     }
 
     if (new &KEYUP_TYPE)
@@ -126,9 +116,16 @@ void update_players()
             {
                 float ang = state.players[i].playerState.angle;
 
-                state.players[i].playerState.x += cosf(ang) * spd;
-                state.players[i].playerState.y += sinf(ang) * spd;
 
+              //state.players[i].playerState.y -= spd;
+          }
+          if(state.players[i].keyboard&KEY_BYTE_D) { 
+              //TODO:
+              float ang= state.players[i].playerState.angle;
+
+              state.players[i].playerState.x -= cosf(ang)*spd;
+              state.players[i].playerState.y -= sinf(ang)*spd;
+          }
                 //state.players[i].playerState.y -= spd;
             }
             if (state.players[i].keyboard & KEY_BYTE_D)
@@ -222,6 +219,17 @@ int main()
             broadcast(state.players, sizeof(GameState));
         }
 
-        prev_update_time = al_get_time();
+    if(al_get_time()-prev_broadcast_time > 0.05) {
+      prev_broadcast_time=al_get_time();
+
+        // a little gambiarra :)
+        for (int i = 0; i < MAX_CHAT_CLIENTS; ++i) {
+            if (isValidId(i)) {
+                state.id=i;
+                sendMsgToClient(&state, sizeof(GameState), i);
+            }
+        }
+
+      //broadcast(state.players, sizeof(GameState));
     }
 }
