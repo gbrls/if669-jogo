@@ -20,7 +20,6 @@
 #define LOGIN_MAX_SIZE 13
 #define HIST_MAX_SIZE 200
 #define RAIZ_3 1.7320508075688772
-//#define RAIZ_3 1.2
 char game[120];
 
 ALLEGRO_TIMEOUT timeout;
@@ -49,7 +48,7 @@ enum Hover hovermenu = nada;
 
 int res_x_comp, res_y_comp;
 float mouse_X, mouse_Y;
-char str[12] = "0";
+char str[12] = {};
 
 /***************************************************************************************************************/
 /***************************************************************************************************************/
@@ -325,7 +324,6 @@ void draw_map(GameState* state) {
               }
             }
 }
-}
 
 int main()
 {
@@ -537,10 +535,15 @@ int main()
           if (evento.keyboard.keycode == ALLEGRO_KEY_BACKSPACE && strlen(str) != 0)
           {
             str[strlen(str) - 1] = '\0';
+            //printf("IP: %s\n",str);
           }
           if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
           {
             state = jogar;
+            printf("IP: %s\n",str);
+
+            assertConnection();
+
           }
         }
       }
@@ -594,7 +597,6 @@ int main()
               game_render_state = GAME_MAP;
             }
           }
-
         }
 
         byte = encodeKey(ktype, key);
@@ -613,12 +615,13 @@ int main()
 
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
-      if(game_render_state==GAME_MAP) {
-            draw_map(&state);
-        } else if(game_render_state==GAME_RAYCAST) {
+      if (game_render_state == GAME_MAP)
+      {
+        draw_map(&state);
 
-          
-
+      }
+      else if (game_render_state == GAME_RAYCAST)
+      {
           float px = state.players[state.id].playerState.x;
           float py = state.players[state.id].playerState.y;
           float angle =  state.players[state.id].playerState.angle;
@@ -635,10 +638,32 @@ int main()
           rayCasting(px, py, dirX, dirY, planeX, planeY, &state);
 
           printf("Game: (%G,%G)\n",px,py);
-        }
+      }
 
-        al_flip_display();
+      break;
+    case HowPlay:
+
+      break;
+    case contexto:
+
+      break;
+    case sair:
+      // Desaloca os recursos utilizados na aplicação
+      al_destroy_display(janela);
+      al_destroy_event_queue(fila_eventos);
+      al_destroy_font(font_op);
+      al_destroy_font(font);
+      al_destroy_font(font_ip);
+      al_destroy_bitmap(background);
+      al_destroy_bitmap(botao_jogar);
+      al_destroy_bitmap(botao_howPlay);
+      al_destroy_bitmap(botao_contexto);
+      al_destroy_bitmap(botao_sair);
+      return 0;
+      break;
     }
-
+    // Atualiza a tela
+    al_flip_display();
+  }
   return 0;
 }

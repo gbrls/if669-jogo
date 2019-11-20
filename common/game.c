@@ -1,5 +1,6 @@
 #include "game.h"
 
+
 // # parede, . vazio, 0-4 geladeiras
 unsigned char GameMap[MAP_WIDTH][MAP_HEIGHT] = {
 {'#','.','#','#','#','#','#','#','#','#','#','#','#','#','#','#'}, 
