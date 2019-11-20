@@ -16,36 +16,40 @@
 
 #define NUM_GELADEIRAS 5
 
-typedef struct
-{
+typedef struct {
     float angle;
     float x;
     float y;
+    
+    unsigned char froze; /* Mecanica de congelamento */
 } GamePlayerState;
 
-typedef struct
-{
+typedef struct {
     int active;
     unsigned char keyboard;
     GamePlayerState playerState;
 } ClientState;
 
-typedef struct
-{
-    ClientState players[MAX_CHAT_CLIENTS];
-    unsigned char geladeiras;
+typedef struct {
+    ClientState players[MAX_CHAT_CLIENTS]; 
+    unsigned char geladeiras; /* Guarda o estado das geladeiras */
+    
     double conta;
-    double elapsed;
-    unsigned char id;
+    double elapsed; /* Quanto tempo de jogo se passou */
+    
+    /* ID modificado para jogador que se manda,
+     para cada jogador saber o seu ip */
+    unsigned char id; 
+    unsigned char jaquin; /* ID jo jauqin */
+    unsigned char ended; /* Já acabou o jogo? 0: não, 1: chefs: 2 jaquin */
+    unsigned char started;
 } GameState;
 
-enum GameRenderState
-{
+enum GameRenderState {
     GAME_MAP,
     GAME_RAYCAST,
 };
-enum estadoDoJogo
-{
+enum estadoDoJogo {
     menu,
     jogar,
     jogar_IP,
@@ -53,9 +57,10 @@ enum estadoDoJogo
     contexto,
     sair,
     nada,
+    tela_vitoria,
+    waiting_for_players,
 };
-enum Hover
-{
+enum Hover {
     sairHover,
     jogarHover,
     contextoHover,

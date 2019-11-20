@@ -136,7 +136,8 @@ void init_client(int id) {
         state.players[id].playerState.x=WIDTH/2;
         state.players[id].playerState.y=HEIGHT/2;
         state.players[id].playerState.angle=0.0f;
-
+        state.players[id].playerState.froze=0;
+        
     }
 }
 
@@ -150,6 +151,14 @@ void update_game_state(double delta_time) {
         if(state.geladeiras & (1<<i)){
             state.conta += delta_time*K;
         }
+    }
+
+    if(state.elapsed/60.0 > 2.0) {
+        //state.ended = 1;
+    }
+
+    if(!state.started && state.players[(int)state.jaquin].keyboard&KEY_BYTE_ACTION){
+        state.started=1;
     }
 }
 
@@ -166,6 +175,9 @@ int main() {
 
   //state.geladeiras=0x4; /* geladeira nmuber 3 starts on */
   state.elapsed=0;
+  state.started=0;
+  
+
   while (1) {
 
     int id = acceptConnection();

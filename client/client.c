@@ -46,6 +46,11 @@ enum GameRenderState game_render_state = GAME_MAP;
 enum estadoDoJogo state = menu;
 enum Hover hovermenu = nada;
 
+/* Não confundir a struct GameState com o enum estadoDoJogo.
+O primeiro contém todas as informações nescessariás da logica do jogo,
+o segundo, é o enum da maquina de estados do jogo */
+GameState GState;
+
 int res_x_comp, res_y_comp;
 float mouse_X, mouse_Y;
 char str[12] = {};
@@ -325,8 +330,63 @@ void draw_map(GameState* state) {
             }
 }
 
-int main()
-{
+void get_events() {
+al_init_timeout(&timeout, 0.020);
+
+      if (al_wait_for_event_until(fila_eventos, &evento, &timeout))
+      {
+
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
+        }
+
+        unsigned char byte = 0;
+        int ktype = 0, key = 0;
+
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
+        }
+
+        if (evento.type == ALLEGRO_EVENT_KEY_UP)
+        {
+          ktype = KEYUP_TYPE;
+          key = evento.keyboard.keycode;
+        }
+
+        if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+        {
+          ktype = KEYDOWN_TYPE;
+          key = evento.keyboard.keycode;
+
+          if (key == ALLEGRO_KEY_ESCAPE)
+          {
+            if (game_render_state == GAME_MAP)
+            {
+              game_render_state = GAME_RAYCAST;
+            }
+            else
+            {
+              game_render_state = GAME_MAP;
+            }
+          }
+        }
+
+        byte = encodeKey(ktype, key);
+
+        // Check confirmation byte
+        if (byte & CONFIRMATION_BIT)
+        {
+          //TODO: check server's response
+          sendMsgToServer((void *)&byte, 1);
+        }
+      }
+
+
+}
+
+int main() {
 
   srand(time(NULL));
   //assertConnection();
@@ -539,7 +599,7 @@ int main()
           }
           if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
           {
-            state = jogar;
+            state = waiting_for_players;
             printf("IP: %s\n",str);
 
             assertConnection();
@@ -549,82 +609,58 @@ int main()
       }
       /***************************************************************************************************************/
 
-      al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 503, HEIGHT - 333, ALLEGRO_ALIGN_LEFT, "Coloque seu IP:");
-      al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 500, HEIGHT - 330, ALLEGRO_ALIGN_LEFT, "Coloque seu IP:");
+      al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 503, HEIGHT - 333, ALLEGRO_ALIGN_LEFT, "Coloque o IP do servidor:");
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 500, HEIGHT - 330, ALLEGRO_ALIGN_LEFT, "Coloque o IP do servidor:");
 
       al_draw_text(font_ip, al_map_rgb(255, 255, 255), WIDTH - (strlen(str) * 15) - 333, HEIGHT - 233, ALLEGRO_ALIGN_LEFT, str);
       al_draw_text(font_ip, al_map_rgb(235, 10, 0), WIDTH - (strlen(str) * 15) - 330, HEIGHT - 230, ALLEGRO_ALIGN_LEFT, str);
       break;
-    case jogar:
+    
+    case tela_vitoria:
+          al_clear_to_color(al_map_rgb(0, 0, 255));
+      break; 
 
-      al_init_timeout(&timeout, 0.020);
+    case waiting_for_players:
+      al_clear_to_color(al_map_rgb(0, 0, 255));
+      al_draw_text(font_op, al_map_rgb(255, 255, 255),
+       10, 0, 0, "Esperando os outros jogadores...");
 
-      if (al_wait_for_event_until(fila_eventos, &evento, &timeout))
-      {
+      recvMsgFromServer(&GState, DONT_WAIT);
 
-        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-        {
-          state = sair;
-        }
-
-        unsigned char byte = 0;
-        int ktype = 0, key = 0;
-
-        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
-        {
-          state = sair;
-        }
-
-        if (evento.type == ALLEGRO_EVENT_KEY_UP)
-        {
-          ktype = KEYUP_TYPE;
-          key = evento.keyboard.keycode;
-        }
-
-        if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
-        {
-          ktype = KEYDOWN_TYPE;
-          key = evento.keyboard.keycode;
-
-          if (key == ALLEGRO_KEY_ESCAPE)
-          {
-            if (game_render_state == GAME_MAP)
-            {
-              game_render_state = GAME_RAYCAST;
-            }
-            else
-            {
-              game_render_state = GAME_MAP;
-            }
-          }
-        }
-
-        byte = encodeKey(ktype, key);
-
-        // Check confirmation byte
-        if (byte & CONFIRMATION_BIT)
-        {
-          //TODO: check server's response
-          sendMsgToServer((void *)&byte, 1);
-        }
+      if(GState.jaquin == GState.id) {
+        al_draw_text(font_op, al_map_rgb(255, 255, 0),
+       150, 250, 0, "Voce é o jaquin! ehehehe");
       }
 
-      GameState state;
-      //ClientState players[MAX_CHAT_CLIENTS];
-      int ret = recvMsgFromServer(&state, DONT_WAIT);
+      if(GState.started) {
+        state = jogar;
+      }
+
+      get_events();
+
+      break;
+    case jogar:
+      //
+      recvMsgFromServer(&GState, DONT_WAIT);
+
+      if(GState.ended) {
+        state = tela_vitoria;
+      }
+
+      get_events();
 
       al_clear_to_color(al_map_rgb(0, 0, 0));
 
       if (game_render_state == GAME_MAP)
       {
-        draw_map(&state);
+        draw_map(&GState);
 
       }
       else if (game_render_state == GAME_RAYCAST)
       {
-          float px = state.players[state.id].playerState.x;
-          float py = state.players[state.id].playerState.y;
-          float angle =  state.players[state.id].playerState.angle;
+          float px = GState.players[GState.id].playerState.x;
+          float py = GState.players[GState.id].playerState.y;
+          float angle =  GState.players[GState.id].playerState.angle;
           float dirX = cosf(angle), planeY = (RAIZ_3 * dirX/3);
           float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY/3);
           al_clear_to_color(al_map_rgb(0,0,0));
@@ -635,21 +671,21 @@ int main()
           al_draw_filled_rectangle(0,HEIGHT/2,WIDTH,HEIGHT,
                         al_map_rgb(81,37,0));
 
-          rayCasting(px, py, dirX, dirY, planeX, planeY, &state);
+          rayCasting(px, py, dirX, dirY, planeX, planeY, &GState);
 
           
       }
 
-      al_draw_rectangle(5,5,state.conta,10,
+      al_draw_rectangle(5,5,GState.conta,10,
                         al_map_rgb(100,200,100),5);
 
-      al_draw_rectangle(5,25,state.elapsed,30,
+      al_draw_rectangle(5,25,GState.elapsed,30,
                         al_map_rgb(200,200,100),5);
 
       char txt[50]={};
-      sprintf(txt,"%G",state.conta);
+      sprintf(txt,"%G",GState.conta);
       al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 35,0, txt);
-      sprintf(txt,"%d:%02d",(int)(state.elapsed/60.0), (int)(state.elapsed)%60);
+      sprintf(txt,"%d:%02d",(int)(GState.elapsed/60.0), (int)(GState.elapsed)%60);
       al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 75,0, txt);
 
       break;
