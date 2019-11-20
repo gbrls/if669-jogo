@@ -343,7 +343,7 @@ int main()
       // Verificamos se há eventos na fila
       while (!al_is_event_queue_empty(fila_eventos))
       {
-        ALLEGRO_EVENT evento;
+
         al_wait_for_event(fila_eventos, &evento);
 
         // Hover
