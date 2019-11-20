@@ -32,6 +32,28 @@ int check_map_collision(float x, float y) {
     }
 }
 
+void hit_players(int id, float x, int y, float angle) {
+    float nx=x,ny=y,step=0.3;
+
+    while(((nx-x)*(nx-x) + (ny-y)*(ny-y)) < PLAYER_VIEW_DIST*PLAYER_VIEW_DIST) {
+        
+        nx += cosf(angle)*step;
+        ny += sinf(angle)*step;
+        
+        for(int i=0;i<MAX_CHAT_CLIENTS;i++){    
+            if(isValidId(i) &&  i != id && i != state.jaquin) {
+                float px = state.players[i].playerState.x;
+                float py = state.players[i].playerState.y;
+                if((nx-px)*(nx-px) + (ny-py)*(ny-py) < 100.0) {
+                    state.players[i].playerState.froze=!state.players[i].playerState.froze;
+                    return;
+                }
+            }
+        }
+
+    }
+}
+
 void toggle_geladeiras(float x, float y, float angle) {
     //printf("%02.f, %02.f, %0.2f\n",x,y,angle);
     float nx=x,ny=y,step=0.3;
@@ -71,6 +93,12 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new){
            toggle_geladeiras(state.players[id].playerState.x,
                    state.players[id].playerState.y,
                    state.players[id].playerState.angle);
+
+            if(state.jaquin==id) {
+                hit_players(id, state.players[id].playerState.x,
+                state.players[id].playerState.y,
+                state.players[id].playerState.angle);
+            }
        }
        //if(new&KEY_BYTE_ACTION) state.geladeiras^=0xff;
     }
@@ -94,8 +122,12 @@ void update_players() {
     for(int i=0;i<MAX_CHAT_CLIENTS;i++){
         if(state.players[i].active){
 
+
           float spd=0.2,rotspd=0.002;
           float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
+
+
+            if(i==state.jaquin) spd/=5.0f;
 
           if(state.players[i].keyboard&KEY_BYTE_L) {
               state.players[i].playerState.angle -= rotspd;
@@ -119,7 +151,13 @@ void update_players() {
               state.players[i].playerState.y -= sinf(ang)*spd;
           }
 
-          if(check_collision(state.players[i].playerState.x,state.players[i].playerState.y)) {
+          //if(state.players[i].playerState.froze) {
+          //  printf("%d is frozen\n",i);
+          //  return;
+          //}
+
+          if(check_collision(state.players[i].playerState.x,state.players[i].playerState.y)
+          ||state.players[i].playerState.froze) {
               state.players[i].playerState.x=prevx;
               state.players[i].playerState.y=prevy;
           }
@@ -153,8 +191,12 @@ void update_game_state(double delta_time) {
         }
     }
 
-    if(state.elapsed/60.0 > 2.0) {
-        //state.ended = 1;
+    if(state.elapsed/60.0 > 5) {
+        state.ended = 1;
+    }
+
+    if(state.conta > 400) {
+        state.ended = 2;
     }
 
     if(!state.started && state.players[(int)state.jaquin].keyboard&KEY_BYTE_ACTION){

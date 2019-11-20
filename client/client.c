@@ -316,10 +316,11 @@ void draw_map(GameState* state) {
                 float angle =  state->players[i].playerState.angle;
 
                 int c =0;
+                int congelado = state->players[i].playerState.froze;
                 if(i==(int)(state->jaquin)) c = 255;
 
                 al_draw_circle(px, py,
-                        PLAYER_RADIUS, al_map_rgb(c, 0, 255),10.0f);
+                        PLAYER_RADIUS, al_map_rgb(c, 255*congelado, 255),10.0f);
 
                 al_draw_line(px, py,
                         px + cosf(angle)*PLAYER_VIEW_DIST,
@@ -620,7 +621,28 @@ int main() {
       break;
     
     case tela_vitoria:
-          al_clear_to_color(al_map_rgb(0, 0, 255));
+          if(GState.jaquin != GState.id && GState.ended==1) {
+            al_clear_to_color(al_map_rgb(0, 0, 255));
+            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce ganhou!");
+
+          }
+
+          if(GState.jaquin == GState.id && GState.ended==1) {
+            al_clear_to_color(al_map_rgb(255, 0, 0));
+            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce perdeu!");
+          }
+
+          if(GState.jaquin == GState.id && GState.ended==2) {
+            al_clear_to_color(al_map_rgb(0, 0, 255));
+            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce ganhou!");
+
+          }
+
+          if(GState.jaquin != GState.id && GState.ended==2) {
+            al_clear_to_color(al_map_rgb(255, 0, 0));
+            al_draw_text(font_ip, al_map_rgb(255, 255, 255),5, 5,0, "Voce perdeu!");
+          }
+
       break; 
 
     case waiting_for_players:
@@ -695,6 +717,11 @@ int main() {
       al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 35,0, txt);
       sprintf(txt,"%d:%02d",(int)(GState.elapsed/60.0), (int)(GState.elapsed)%60);
       al_draw_text(font_ip, al_map_rgb(50, 50, 50),5, 75,0, txt);
+
+      if(GState.players[GState.id].playerState.froze) {
+        al_draw_text(font_ip, al_map_rgb(50, 200, 200),200, 75,0, "Congelou!");
+
+      }
 
       break;
     case HowPlay:
