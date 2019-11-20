@@ -50,6 +50,7 @@ enum estadoDoJogo
     HowPlay,
     contexto,
     sair,
+    nada,
 };
 enum Hover
 {
