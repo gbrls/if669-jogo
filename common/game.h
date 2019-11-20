@@ -3,8 +3,8 @@
 
 #define MAX_CHAT_CLIENTS 5
 
-#define WIDTH 800
-#define HEIGHT 800
+#define WIDTH 1366
+#define HEIGHT 768
 
 #define MAP_WIDTH 16
 #define MAP_HEIGHT 16
@@ -16,26 +16,30 @@
 
 #define NUM_GELADEIRAS 5
 
-typedef struct {
+typedef struct
+{
     float angle;
     float x;
     float y;
 } GamePlayerState;
 
-typedef struct {
+typedef struct
+{
     int active;
     unsigned char keyboard;
     GamePlayerState playerState;
 } ClientState;
 
-typedef struct {
+typedef struct
+{
     ClientState players[MAX_CHAT_CLIENTS];
     unsigned char geladeiras;
     double conta;
     unsigned char id;
 } GameState;
 
-enum GameRenderState {
+enum GameRenderState
+{
     GAME_MAP,
     GAME_RAYCAST,
 };
