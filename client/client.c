@@ -393,7 +393,7 @@ int main()
               evento.mouse.y >= HEIGHT - al_get_bitmap_height(botao_jogar) - 333)
           {
             printf("Jogar\n");
-            state = jogar;
+            state = jogar_IP;
           }
           //clicou no botão Como Jogar
           if (evento.mouse.x >= WIDTH - al_get_bitmap_width(botao_howPlay) - 163 &&
