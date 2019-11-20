@@ -14,5 +14,5 @@ O servidor mantém uma struct com um vetor com os estados de todos os jogadores,
 Este byte encoda qual tecla esta sendo pressionada, se o evento foi de pressionamento 
 ou soltura da tecla e um bit para checar se a mensagem é valida.
 
-A cada ciclo o servidor deverá fazer o _broadcast modificado_ da struct com os estados para todos os jogadores, antes de enviar-la, ele a modifica inserindo o id do jogador que irar receber-la. 
+A cada ciclo o servidor deverá fazer o _broadcast modificado_ da struct com os estados para todos os jogadores, antes de enviar-la, ele a modifica inserindo o id do jogador que irá receber-la. 
 
