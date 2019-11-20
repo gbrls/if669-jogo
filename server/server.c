@@ -15,10 +15,9 @@
 
 GameState state;
 
-int check_map_collision(float x, float y)
-{
-    int mx = x / (float)MAP_SCALE;
-    int my = y / (float)MAP_SCALE;
+int check_map_collision(float x, float y) {
+    int mx = x/(float)MAP_SCALE;
+    int my = y/(float)MAP_SCALE;
 
     if(GameMap[mx][my]!='.'){
 
@@ -27,29 +26,27 @@ int check_map_collision(float x, float y)
         }
 
         return 1;
-    }
-    else
-    {
+
+    } else {
         return 0;
     }
 }
 
-void toggle_geladeiras(float x, float y, float angle)
-{
+void toggle_geladeiras(float x, float y, float angle) {
     //printf("%02.f, %02.f, %0.2f\n",x,y,angle);
-    float nx = x, ny = y, step = 0.3;
-
+    float nx=x,ny=y,step=0.3;
 
     while(((nx-x)*(nx-x) + (ny-y)*(ny-y)) < PLAYER_VIEW_DIST*PLAYER_VIEW_DIST) {
-        nx += cosf(angle) * step;
-        ny += sinf(angle) * step;
 
+        nx += cosf(angle)*step;
+        ny += sinf(angle)*step;
 
         int ret = check_map_collision(nx,ny);
         if(ret>=1) {
             if(ret>1) {
                 ret-=2;
                 state.geladeiras^=(1<<ret);
+
             }
             return;
         }
@@ -57,11 +54,10 @@ void toggle_geladeiras(float x, float y, float angle)
 }
 
 // Decoda um byte vindo do cliente
-unsigned char process_byte(int id, unsigned char prev, unsigned char new)
-{
+unsigned char process_byte(int id, unsigned char prev, unsigned char new){
+
 
     unsigned char nib;
-
     if(new&KEY_BYTE_L) nib = KEY_BYTE_L;
     if(new&KEY_BYTE_R) nib = KEY_BYTE_R;
     if(new&KEY_BYTE_U) nib = KEY_BYTE_U;
@@ -79,43 +75,39 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new)
        //if(new&KEY_BYTE_ACTION) state.geladeiras^=0xff;
     }
 
-    if (new &KEYUP_TYPE)
-    {
-        prev = prev & (~nib);
+    if(new&KEYUP_TYPE){
+        prev=prev & (~nib);
     }
 
     return prev;
 }
 
-int check_collision(float x, float y)
-{
-    if (x < 0 || y < 0 || x > WIDTH || y > HEIGHT || check_map_collision(x, y))
-        return 1;
+
+
+int check_collision(float x, float y) {
+    if(x<0||y<0||x>WIDTH||y>HEIGHT||check_map_collision(x,y)) return 1;
     return 0;
 }
 
-void update_players()
-{
-    for (int i = 0; i < MAX_CHAT_CLIENTS; i++)
-    {
-        if (state.players[i].active)
-        {
 
-            float spd = 0.2, rotspd = 0.002;
-            float prevx = state.players[i].playerState.x, prevy = state.players[i].playerState.y;
+void update_players() {
+    for(int i=0;i<MAX_CHAT_CLIENTS;i++){
+        if(state.players[i].active){
 
-            if (state.players[i].keyboard & KEY_BYTE_L)
-            {
-                state.players[i].playerState.angle -= rotspd;
-            }
-            if (state.players[i].keyboard & KEY_BYTE_R)
-            {
-                state.players[i].playerState.angle += rotspd;
-            }
-            if (state.players[i].keyboard & KEY_BYTE_U)
-            {
-                float ang = state.players[i].playerState.angle;
+          float spd=0.2,rotspd=0.002;
+          float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
 
+          if(state.players[i].keyboard&KEY_BYTE_L) {
+              state.players[i].playerState.angle -= rotspd;
+          }
+          if(state.players[i].keyboard&KEY_BYTE_R) {
+              state.players[i].playerState.angle += rotspd;
+          }
+          if(state.players[i].keyboard&KEY_BYTE_U) {
+              float ang= state.players[i].playerState.angle;
+
+              state.players[i].playerState.x += cosf(ang)*spd;
+              state.players[i].playerState.y += sinf(ang)*spd;
 
               //state.players[i].playerState.y -= spd;
           }
@@ -126,98 +118,78 @@ void update_players()
               state.players[i].playerState.x -= cosf(ang)*spd;
               state.players[i].playerState.y -= sinf(ang)*spd;
           }
-                //state.players[i].playerState.y -= spd;
-            }
-            if (state.players[i].keyboard & KEY_BYTE_D)
-            {
-                //TODO:
-            }
 
-            if (check_collision(state.players[i].playerState.x, state.players[i].playerState.y))
-            {
-                state.players[i].playerState.x = prevx;
-                state.players[i].playerState.y = prevy;
-            }
+          if(check_collision(state.players[i].playerState.x,state.players[i].playerState.y)) {
+              state.players[i].playerState.x=prevx;
+              state.players[i].playerState.y=prevy;
+          }
+
         }
     }
 }
 
-void init_client(int id)
-{
-    if (isValidId(id))
-    {
-        state.players[id].active = 1;
-        state.players[id].keyboard = 0;
+void init_client(int id) {
+    if(isValidId(id)){
+        state.players[id].active=1;
+        state.players[id].keyboard=0;
 
-        state.players[id].playerState.x = WIDTH / 2;
-        state.players[id].playerState.y = HEIGHT / 2;
-        state.players[id].playerState.angle = 0.0f;
+        state.players[id].playerState.x=WIDTH/2;
+        state.players[id].playerState.y=HEIGHT/2;
+        state.players[id].playerState.angle=0.0f;
+
     }
 }
 
-void update_game_state(double delta_time)
-{
+void update_game_state(double delta_time) {
     //printf("%g\n",state.conta);
 
-    double K = 5.0;
+    double K=5.0;
 
-    for (int i = 0; i < NUM_GELADEIRAS; i++)
-    {
-        if (state.geladeiras & (1 << i))
-        {
-            state.conta += delta_time * K;
+    for(int i=0;i<NUM_GELADEIRAS;i++){
+        if(state.geladeiras & (1<<i)){
+            state.conta += delta_time*K;
         }
     }
 }
 
-int main()
-{
+int main() {
 
-    char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
-    char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
+  char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
+  char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
 
-    serverInit(MAX_CHAT_CLIENTS);
-    puts("Server is running!!");
 
-    double prev_broadcast_time = al_get_time(), prev_update_time = al_get_time();
+  serverInit(MAX_CHAT_CLIENTS);
+  puts("Server is running!!");
 
-    //state.geladeiras=0x4; /* geladeira nmuber 3 starts on */
+  double prev_broadcast_time=al_get_time(), prev_update_time=al_get_time();
 
-    while (1)
-    {
+  //state.geladeiras=0x4; /* geladeira nmuber 3 starts on */
 
-        int id = acceptConnection();
-        if (id != NO_CONNECTION)
-        {
-            recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
-            printf("%s logged in!\n", client_names[id]);
-            init_client(id);
-        }
+  while (1) {
 
-        unsigned char incoming_byte;
-        struct msg_ret_t msg_ret = recvMsg(&incoming_byte);
+    int id = acceptConnection();
+    if (id != NO_CONNECTION) {
+      recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
+      printf("%s logged in!\n", client_names[id]);
+      init_client(id);
+    }
 
-        if (msg_ret.status == MESSAGE_OK)
-        {
-            printf("Recieved 0x%x from %d\n", incoming_byte, msg_ret.client_id);
-            state.players[msg_ret.client_id].keyboard = process_byte(msg_ret.client_id, state.players[msg_ret.client_id].keyboard, incoming_byte);
-        }
-        else if (msg_ret.status == DISCONNECT_MSG)
-        {
-            state.players[msg_ret.client_id].active = 0;
-            sprintf(str_buffer, "%s disconnected", client_names[msg_ret.client_id]);
-            printf("%s disconnected, id = %d is free\n",
-                   client_names[msg_ret.client_id], msg_ret.client_id);
-        }
+    unsigned char incoming_byte;
+    struct msg_ret_t msg_ret = recvMsg(&incoming_byte);
 
-        update_players();
-        update_game_state(al_get_time() - prev_update_time);
+    if (msg_ret.status == MESSAGE_OK) {
+      printf("Recieved 0x%x from %d\n", incoming_byte, msg_ret.client_id);
+      state.players[msg_ret.client_id].keyboard=process_byte(msg_ret.client_id,state.players[msg_ret.client_id].keyboard,incoming_byte);
 
-        if (al_get_time() - prev_broadcast_time > 0.05)
-        {
-            prev_broadcast_time = al_get_time();
-            broadcast(state.players, sizeof(GameState));
-        }
+    } else if (msg_ret.status == DISCONNECT_MSG) {
+      state.players[msg_ret.client_id].active=0;
+      sprintf(str_buffer, "%s disconnected", client_names[msg_ret.client_id]);
+      printf("%s disconnected, id = %d is free\n",
+             client_names[msg_ret.client_id], msg_ret.client_id);
+    }
+
+    update_players();
+    update_game_state(al_get_time()-prev_update_time);
 
     if(al_get_time()-prev_broadcast_time > 0.05) {
       prev_broadcast_time=al_get_time();
@@ -232,4 +204,8 @@ int main()
 
       //broadcast(state.players, sizeof(GameState));
     }
+
+    prev_update_time = al_get_time();
+
+  }
 }
