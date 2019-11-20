@@ -547,13 +547,13 @@ int main()
       }
       if (hovermenu != contextoHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
-        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Lenda");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Lenda");
       }
       else if (hovermenu == contextoHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Lenda");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Lenda");
       }
       if (hovermenu != sairHover)
       {
@@ -612,8 +612,9 @@ int main()
           if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
           {
             //assertConnection();
-            if(tryConnect() == SERVER_UP) state = waiting_for_players;
-            
+            if (tryConnect() == SERVER_UP)
+              state = waiting_for_players;
+
             printf("IP: %s\n", str);
           }
         }
@@ -628,6 +629,10 @@ int main()
       break;
 
     case tela_vitoria:
+      if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+      {
+        state = sair;
+      }
       if (GState.jaquin != GState.id && GState.ended == 1)
       {
         al_clear_to_color(al_map_rgb(0, 0, 255));
@@ -655,6 +660,10 @@ int main()
       break;
 
     case waiting_for_players:
+      if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+      {
+        state = sair;
+      }
       al_clear_to_color(al_map_rgb(0, 0, 255));
 
       char text[100];
@@ -734,10 +743,16 @@ int main()
 
       break;
     case HowPlay:
-
+      if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+      {
+        state = sair;
+      }
       break;
     case contexto:
-
+      if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+      {
+        state = sair;
+      }
       break;
     case sair:
       // Desaloca os recursos utilizados na aplicação
