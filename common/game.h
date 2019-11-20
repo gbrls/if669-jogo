@@ -43,6 +43,7 @@ typedef struct {
     unsigned char jaquin; /* ID jo jauqin */
     unsigned char ended; /* Já acabou o jogo? 0: não, 1: chefs: 2 jaquin */
     unsigned char started;
+    unsigned char n_players;
 } GameState;
 
 enum GameRenderState {

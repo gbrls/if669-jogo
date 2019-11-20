@@ -315,8 +315,11 @@ void draw_map(GameState* state) {
                 float py = state->players[i].playerState.y - offy;
                 float angle =  state->players[i].playerState.angle;
 
+                int c =0;
+                if(i==(int)(state->jaquin)) c = 255;
+
                 al_draw_circle(px, py,
-                        PLAYER_RADIUS, al_map_rgb(0, 0, 255),10.0f);
+                        PLAYER_RADIUS, al_map_rgb(c, 0, 255),10.0f);
 
                 al_draw_line(px, py,
                         px + cosf(angle)*PLAYER_VIEW_DIST,
@@ -622,8 +625,13 @@ int main() {
 
     case waiting_for_players:
       al_clear_to_color(al_map_rgb(0, 0, 255));
+
+      char text[100];
+
+      sprintf(text, "Esperando outros jogares (%d)...",(int)GState.n_players);
+
       al_draw_text(font_op, al_map_rgb(255, 255, 255),
-       10, 0, 0, "Esperando os outros jogadores...");
+       10, 0, 0, text);
 
       recvMsgFromServer(&GState, DONT_WAIT);
 

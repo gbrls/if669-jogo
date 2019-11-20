@@ -176,6 +176,7 @@ int main() {
   //state.geladeiras=0x4; /* geladeira nmuber 3 starts on */
   state.elapsed=0;
   state.started=0;
+  state.n_players=0;
   
 
   while (1) {
@@ -184,6 +185,7 @@ int main() {
     if (id != NO_CONNECTION) {
       recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
       printf("%s logged in!\n", client_names[id]);
+      state.n_players++;
       init_client(id);
     }
 
@@ -199,6 +201,7 @@ int main() {
       sprintf(str_buffer, "%s disconnected", client_names[msg_ret.client_id]);
       printf("%s disconnected, id = %d is free\n",
              client_names[msg_ret.client_id], msg_ret.client_id);
+             state.n_players--;
     }
 
     update_players();
