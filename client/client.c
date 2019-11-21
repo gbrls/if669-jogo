@@ -814,6 +814,7 @@ int main()
           state = sair;
         }
       }
+      al_clear_to_color(al_map_rgb(0, 255, 0));
       break;
     case contexto:
       while (!al_is_event_queue_empty(fila_eventos))
