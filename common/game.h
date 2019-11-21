@@ -60,6 +60,7 @@ enum estadoDoJogo {
     nada,
     tela_vitoria,
     waiting_for_players,
+    abertura,
 };
 enum Hover {
     sairHover,
