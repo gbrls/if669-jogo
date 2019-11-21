@@ -1,7 +1,7 @@
 #ifndef LIB_GAMELIB_H
 #define LIB_GAMELIB_H
 
-#define MAX_CHAT_CLIENTS 10
+#define MAX_CHAT_CLIENTS 5
 
 #define WIDTH 1366
 #define HEIGHT 768
