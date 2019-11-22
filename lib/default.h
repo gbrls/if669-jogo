@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define PORT 9005
+#define PORT 80
 
 enum conn_msg_t {
   SUCCESSFUL_CONNECTION,
