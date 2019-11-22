@@ -171,8 +171,21 @@ void init_client(int id) {
         state.players[id].active=1;
         state.players[id].keyboard=0;
 
-        state.players[id].playerState.x=WIDTH/2;
-        state.players[id].playerState.y=HEIGHT/2;
+        int mx = 0;
+        int my = 0;
+
+
+        do {
+            mx = rand()%MAP_WIDTH;
+            my = rand()%MAP_HEIGHT;
+        } while(GameMap[mx][my]!='.');
+
+
+        state.players[id].playerState.x=mx*MAP_SCALE;
+        state.players[id].playerState.y=mx*MAP_SCALE;
+
+        
+
         state.players[id].playerState.angle=0.0f;
         state.players[id].playerState.froze=0;
         
