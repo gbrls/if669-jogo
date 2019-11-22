@@ -77,10 +77,26 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
         rgb[1] = 255;
         rgb[2] = 255;
         break;
+      case '-':
+        rgb[0] = 100;
+        rgb[1] = 100;
+        rgb[2] = 200;
+        break;
+      case '*':
+        rgb[0] = 200;
+        rgb[1] = 100;
+        rgb[2] = 100;
+        break;
+    case '+':
+        rgb[0] = 100;
+        rgb[1] = 200;
+        rgb[2] = 100;
+        break;
+
       default:
-        rgb[0] = 255;
-        rgb[1] = 255;
-        rgb[2] = 0;
+        rgb[0] = 50;
+        rgb[1] = 50;
+        rgb[2] = 50;
 
         if(alvo >= '0' && alvo <= '9'){
           alvo = alvo - '0';

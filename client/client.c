@@ -310,6 +310,9 @@ void draw_map(GameState *state)
 
         al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
                                  (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(c, 255, 0));
+      } else if(GameMap[j][i] == '-') {
+        al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
+                                 (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(100, 100, 200));
       }
     }
   }
