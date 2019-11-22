@@ -45,7 +45,7 @@ void hit_players(int id, float x, int y, float angle) {
                 float px = state.players[i].playerState.x;
                 float py = state.players[i].playerState.y;
                 if((nx-px)*(nx-px) + (ny-py)*(ny-py) < 100.0) {
-                    if(id=state.jaquin) state.players[i].playerState.froze=1;
+                    if(id==state.jaquin) state.players[i].playerState.froze=1;
                     return;
                 }
             }
@@ -95,6 +95,7 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new){
                    state.players[id].playerState.angle);
 
             if(!state.players[id].playerState.froze) {
+                puts("Freezing");
                 hit_players(id, state.players[id].playerState.x,
                 state.players[id].playerState.y,
                 state.players[id].playerState.angle);
