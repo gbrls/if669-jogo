@@ -114,7 +114,7 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new){
 
 
 int check_collision(float x, float y) {
-    if(x<0||y<0||x>WIDTH||y>HEIGHT||check_map_collision(x,y)) return 1;
+    if(x<0||y<0||check_map_collision(x,y)) return 1;
     return 0;
 }
 
