@@ -30,6 +30,7 @@ ALLEGRO_DISPLAY *janela = NULL;
 ALLEGRO_MONITOR_INFO info;
 
 ALLEGRO_BITMAP *background = NULL;
+ALLEGRO_BITMAP *logo = NULL;
 
 ALLEGRO_FONT *font = NULL;
 ALLEGRO_FONT *font_ip = NULL;
@@ -43,7 +44,7 @@ ALLEGRO_BITMAP *botao_contexto = NULL;
 ALLEGRO_BITMAP *botao_howPlay = NULL;
 
 enum GameRenderState game_render_state = GAME_MAP;
-enum estadoDoJogo state = menu;
+enum estadoDoJogo state = abertura;
 enum Hover hovermenu = nada;
 
 /* Não confundir a struct GameState com o enum estadoDoJogo.
@@ -98,9 +99,7 @@ void assertConnection()
     ans = tryConnect();
   }
   char login[LOGIN_MAX_SIZE + 4];
-  ///printf("Please enter your login (limit = %d): ", LOGIN_MAX_SIZE);
-  ///scanf(" %[^\n]", login);
-  ///getchar();
+
   for (int i = 0; i < LOGIN_MAX_SIZE; i++)
   {
     login[i] = rand() % 256;
@@ -207,8 +206,9 @@ int inicializar()
 
   printf("carregando imagens\n");
   background = al_load_bitmap("assets/img/menu.png");
+  logo = al_load_bitmap("assets/img/menu.png");
 
-  if (!background)
+  if (!background || !logo)
   {
     al_destroy_display(janela);
     al_destroy_font(font);
@@ -396,6 +396,54 @@ void get_events()
     }
   }
 }
+void fadein(ALLEGRO_BITMAP *imagem, int velocidade)
+{
+  if (velocidade < 0)
+  {
+    velocidade = 1;
+  }
+  else if (velocidade > 15)
+  {
+    velocidade = 15;
+  }
+
+  int alfa;
+  for (alfa = 0; alfa <= 255; alfa += velocidade)
+  {
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+    al_draw_tinted_bitmap(imagem, al_map_rgba(alfa, alfa, alfa, alfa), 0, 0, 0);
+    al_flip_display();
+    al_rest(0.005); // Não é necessário caso haja controle de FPS
+  }
+}
+void fadeout(int velocidade)
+{
+  ALLEGRO_BITMAP *buffer = NULL;
+  buffer = al_create_bitmap(WIDTH, HEIGHT);
+  al_set_target_bitmap(buffer);
+  al_draw_bitmap(al_get_backbuffer(janela), 0, 0, 0);
+  al_set_target_bitmap(al_get_backbuffer(janela));
+
+  if (velocidade <= 0)
+  {
+    velocidade = 1;
+  }
+  else if (velocidade > 15)
+  {
+    velocidade = 15;
+  }
+
+  int alfa;
+  for (alfa = 0; alfa <= 255; alfa += velocidade)
+  {
+    al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+    al_draw_tinted_bitmap(buffer, al_map_rgba(255 - alfa, 255 - alfa, 255 - alfa, alfa), 0, 0, 0);
+    al_flip_display();
+    al_rest(0.005); // Não é necessário caso haja controle de FPS
+  }
+
+  al_destroy_bitmap(buffer);
+}
 
 int main()
 {
@@ -410,16 +458,28 @@ int main()
   }
 
   printf("inicializado!");
+
   while (1)
   {
+
     switch (state)
     {
+    case abertura:
+      fadein(logo, 5);
+      al_rest(2.0);
+      fadeout(5);
+      fadein(logo, 5);
+      al_rest(2.0);
+      fadeout(5);
+      al_destroy_bitmap(logo);
+
+      state = menu;
+      break;
     case menu:
 
       //printf("Menu\n");
 
       /***************************************************************************************************************/
-
       // colore o fundo
       al_clear_to_color(al_map_rgb(255, 255, 255));
 
@@ -547,13 +607,13 @@ int main()
       }
       if (hovermenu != contextoHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
-        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 173, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Lenda");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 170, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Lenda");
       }
       else if (hovermenu == contextoHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 203, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Contexto");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 200, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Contexto");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - al_get_bitmap_width(botao_contexto) - 173, HEIGHT - al_get_bitmap_height(botao_contexto) - 173, ALLEGRO_ALIGN_LEFT, "Lenda");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - al_get_bitmap_width(botao_contexto) - 170, HEIGHT - al_get_bitmap_height(botao_contexto) - 170, ALLEGRO_ALIGN_LEFT, "Lenda");
       }
       if (hovermenu != sairHover)
       {
@@ -612,13 +672,18 @@ int main()
           if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
           {
             //assertConnection();
-            //if(tryConnect() == SERVER_UP) state = waiting_for_players;
-            state = waiting_for_players;
-            printf("IP: %s\n",str);
-
-            assertConnection();
+            if (tryConnect() == SERVER_UP) {
+              state = waiting_for_players;
+              char login[LOGIN_MAX_SIZE + 4];
             
-            printf("IP: %s\n", str);
+              for (int i = 0; i < LOGIN_MAX_SIZE; i++)
+              {
+                login[i] = rand() % 256;
+              }
+              int len = (int)strlen(login);
+              sendMsgToServer(login, len + 1);
+              printf("IP: %s\n", str);
+            }
           }
         }
       }
@@ -632,6 +697,10 @@ int main()
       break;
 
     case tela_vitoria:
+      if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+      {
+        state = sair;
+      }
       if (GState.jaquin != GState.id && GState.ended == 1)
       {
         al_clear_to_color(al_map_rgb(0, 0, 255));
@@ -659,7 +728,15 @@ int main()
       break;
 
     case waiting_for_players:
+      if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+      {
+        state = sair;
+      }
       al_clear_to_color(al_map_rgb(0, 0, 255));
+      recvMsgFromServer(&GState, DONT_WAIT);
+      get_events();
+
+      printf("Waiting\n");
 
       char text[100];
 
@@ -668,7 +745,6 @@ int main()
       al_draw_text(font_op, al_map_rgb(255, 255, 255),
                    10, 0, 0, text);
 
-      recvMsgFromServer(&GState, DONT_WAIT);
 
       if (GState.jaquin == GState.id)
       {
@@ -681,7 +757,6 @@ int main()
         state = jogar;
       }
 
-      get_events();
 
       break;
     case jogar:
@@ -738,13 +813,32 @@ int main()
 
       break;
     case HowPlay:
+      while (!al_is_event_queue_empty(fila_eventos))
+      {
 
+        al_wait_for_event(fila_eventos, &evento);
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
+        }
+      }
+      al_clear_to_color(al_map_rgb(0, 255, 0));
       break;
     case contexto:
+      while (!al_is_event_queue_empty(fila_eventos))
+      {
 
+        al_wait_for_event(fila_eventos, &evento);
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+        {
+          state = sair;
+        }
+      }
+      al_clear_to_color(al_map_rgb(255, 0, 0));
       break;
     case sair:
       // Desaloca os recursos utilizados na aplicação
+      fadeout(10);
       al_destroy_display(janela);
       al_destroy_event_queue(fila_eventos);
       al_destroy_font(font_op);
@@ -755,6 +849,7 @@ int main()
       al_destroy_bitmap(botao_howPlay);
       al_destroy_bitmap(botao_contexto);
       al_destroy_bitmap(botao_sair);
+
       return 0;
       break;
     }

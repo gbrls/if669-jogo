@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-
 #include <allegro5/allegro.h>
 
 #define MSG_MAX_SIZE 350
@@ -40,13 +39,14 @@ void hit_players(int id, float x, int y, float angle) {
         nx += cosf(angle)*step;
         ny += sinf(angle)*step;
         
-        for(int i=0;i<MAX_CHAT_CLIENTS;i++){    
-            if(isValidId(i) &&  i != id && i != state.jaquin) {
-                float px = state.players[i].playerState.x;
-                float py = state.players[i].playerState.y;
+        for(int target=0;target<MAX_CHAT_CLIENTS;target++){    
+            if(isValidId(target) &&  target != id && target != state.jaquin) {
+                float px = state.players[target].playerState.x;
+                float py = state.players[target].playerState.y;
                 if((nx-px)*(nx-px) + (ny-py)*(ny-py) < 100.0) {
-                    if(id==state.jaquin) state.players[i].playerState.froze=1;
-                    return;
+                    if(id==state.jaquin) state.players[target].playerState.froze=1;
+                    else state.players[target].playerState.froze=0;
+
                 }
             }
         }
@@ -123,7 +123,6 @@ void update_players() {
     for(int i=0;i<MAX_CHAT_CLIENTS;i++){
         if(state.players[i].active){
 
-
           float spd=0.2,rotspd=0.002;
           float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
 
@@ -184,11 +183,12 @@ void update_game_state(double delta_time) {
     //printf("%g\n",state.conta);
 
     double K=5.0;
-    state.elapsed += delta_time;
-
-    for(int i=0;i<NUM_GELADEIRAS;i++){
-        if(state.geladeiras & (1<<i)){
-            state.conta += delta_time*K;
+    if(state.started) {
+        state.elapsed += delta_time;
+        for(int i=0;i<NUM_GELADEIRAS;i++){
+            if(state.geladeiras & (1<<i)){
+                state.conta += delta_time*K;
+            }
         }
     }
 
@@ -224,12 +224,15 @@ int main() {
 
   while (1) {
 
+    
+    if(!state.started) {
     int id = acceptConnection();
-    if (id != NO_CONNECTION) {
-      recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
-      printf("%s logged in!\n", client_names[id]);
-      state.n_players++;
-      init_client(id);
+        if (id != NO_CONNECTION) {
+          recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
+          printf("%s logged in!\n", client_names[id]);
+          state.n_players++;
+          init_client(id);
+        }
     }
 
     unsigned char incoming_byte;
@@ -247,9 +250,11 @@ int main() {
              state.n_players--;
     }
 
-    update_players();
+    if(state.started) {
+        update_players();
+    }
     update_game_state(al_get_time()-prev_update_time);
-
+    
     if(al_get_time()-prev_broadcast_time > 0.05) {
       prev_broadcast_time=al_get_time();
 

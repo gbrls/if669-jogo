@@ -44,6 +44,8 @@ typedef struct {
     unsigned char ended; /* Já acabou o jogo? 0: não, 1: chefs: 2 jaquin */
     unsigned char started;
     unsigned char n_players;
+
+    float time; // Tempo em que a mensagem foi enviada
 } GameState;
 
 enum GameRenderState {
@@ -60,6 +62,7 @@ enum estadoDoJogo {
     nada,
     tela_vitoria,
     waiting_for_players,
+    abertura,
 };
 enum Hover {
     sairHover,
