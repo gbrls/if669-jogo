@@ -612,7 +612,11 @@ int main()
           if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
           {
             //assertConnection();
-            if(tryConnect() == SERVER_UP) state = waiting_for_players;
+            //if(tryConnect() == SERVER_UP) state = waiting_for_players;
+            state = waiting_for_players;
+            printf("IP: %s\n",str);
+
+            assertConnection();
             
             printf("IP: %s\n", str);
           }
