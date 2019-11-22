@@ -1,13 +1,13 @@
 #ifndef LIB_GAMELIB_H
 #define LIB_GAMELIB_H
 
-#define MAX_CHAT_CLIENTS 10
+#define MAX_CHAT_CLIENTS 5
 
 #define WIDTH 1366
 #define HEIGHT 768
 
-#define MAP_WIDTH 16
-#define MAP_HEIGHT 16
+#define MAP_WIDTH 32
+#define MAP_HEIGHT 32
 
 #define MAP_SCALE 50
 
@@ -60,6 +60,7 @@ enum estadoDoJogo {
     nada,
     tela_vitoria,
     waiting_for_players,
+    abertura,
 };
 enum Hover {
     sairHover,
