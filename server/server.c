@@ -45,13 +45,7 @@ void hit_players(int id, float x, int y, float angle) {
                 float px = state.players[i].playerState.x;
                 float py = state.players[i].playerState.y;
                 if((nx-px)*(nx-px) + (ny-py)*(ny-py) < 100.0) {
-                    if(id != state.jaquin) {
-                        state.players[i].playerState.froze=0;
-                    }
-
-                    if(id == state.jaquin) {
-                        state.players[i].playerState.froze=1;
-                    }
+                    state.players[i].playerState.froze=!state.players[i].playerState.froze;
                     return;
                 }
             }
@@ -100,7 +94,7 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new){
                    state.players[id].playerState.y,
                    state.players[id].playerState.angle);
 
-            if(!state.players[id].playerState.froze) {
+            if(state.jaquin==id) {
                 hit_players(id, state.players[id].playerState.x,
                 state.players[id].playerState.y,
                 state.players[id].playerState.angle);
@@ -189,7 +183,7 @@ void update_game_state(double delta_time) {
     //printf("%g\n",state.conta);
 
     double K=5.0;
-    if(state.started) state.elapsed += delta_time;
+    state.elapsed += delta_time;
 
     for(int i=0;i<NUM_GELADEIRAS;i++){
         if(state.geladeiras & (1<<i)){
@@ -197,11 +191,11 @@ void update_game_state(double delta_time) {
         }
     }
 
-    if(state.elapsed/60.0 > 30) {
+    if(state.elapsed/60.0 > 5) {
         state.ended = 1;
     }
 
-    if(state.conta > 50000) {
+    if(state.conta > 400) {
         state.ended = 2;
     }
 
