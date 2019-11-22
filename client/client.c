@@ -675,7 +675,7 @@ int main()
             if (tryConnect() == SERVER_UP) {
               state = waiting_for_players;
               char login[LOGIN_MAX_SIZE + 4];
-            
+
               for (int i = 0; i < LOGIN_MAX_SIZE; i++)
               {
                 login[i] = rand() % 256;
@@ -684,6 +684,7 @@ int main()
               sendMsgToServer(login, len + 1);
               printf("IP: %s\n", str);
             }
+
           }
         }
       }
@@ -736,8 +737,6 @@ int main()
       recvMsgFromServer(&GState, DONT_WAIT);
       get_events();
 
-      printf("Waiting\n");
-
       char text[100];
 
       sprintf(text, "Esperando outros jogares (%d)...", (int)GState.n_players);
@@ -785,19 +784,25 @@ int main()
         float dirY = sinf(angle), planeX = -(RAIZ_3 * dirY / 3);
         al_clear_to_color(al_map_rgb(0, 0, 0));
 
+        // Ceu
         al_draw_filled_rectangle(0, 0, WIDTH, HEIGHT / 2,
                                  al_map_rgb(70, 70, 70));
 
+        // Chão
         al_draw_filled_rectangle(0, HEIGHT / 2, WIDTH, HEIGHT,
                                  al_map_rgb(81, 37, 0));
 
         rayCasting(px, py, dirX, dirY, planeX, planeY, &GState);
       }
 
-      al_draw_rectangle(5, 5, GState.conta, 10,
+      al_draw_rectangle(5, 5, MAX_CONTA/(float)CONTA_SCALE, 10,
+                        al_map_rgb(150, 255, 150), 5);
+      al_draw_rectangle(5, 5, GState.conta/(float)CONTA_SCALE, 10,
                         al_map_rgb(100, 200, 100), 5);
 
-      al_draw_rectangle(5, 25, GState.elapsed, 30,
+      al_draw_rectangle(5, 25, (MAX_ELAPSED*(float)ELAPSED_SCALE), 30,
+                        al_map_rgb(255, 255, 200), 5);
+      al_draw_rectangle(5, 25, (GState.elapsed*(float)ELAPSED_SCALE)/60.0f, 30,
                         al_map_rgb(200, 200, 100), 5);
 
       char txt[50] = {};

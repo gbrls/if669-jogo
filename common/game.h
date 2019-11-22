@@ -16,6 +16,11 @@
 
 #define NUM_GELADEIRAS 5
 
+#define MAX_CONTA 1000
+#define CONTA_SCALE 5
+#define MAX_ELAPSED 5
+#define ELAPSED_SCALE 100
+
 typedef struct {
     float angle;
     float x;

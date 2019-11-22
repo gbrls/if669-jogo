@@ -192,11 +192,11 @@ void update_game_state(double delta_time) {
         }
     }
 
-    if(state.elapsed/60.0 > 5) {
+    if(state.elapsed/60.0 > MAX_ELAPSED) {
         state.ended = 1;
     }
 
-    if(state.conta > 400) {
+    if(state.conta > MAX_CONTA) {
         state.ended = 2;
     }
 
