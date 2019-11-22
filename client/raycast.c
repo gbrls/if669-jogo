@@ -161,9 +161,11 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
       //}
 
       int congelou = state->players[i].playerState.froze;
+      int jacquin=0;
+      if(state->jaquin==i) jacquin = 1;
       for(int stripe = drawStartX; stripe < drawEndX; stripe++){
         if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < zbuffer[stripe]){
-          al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255 / (2-is_front),255*congelou,0), 2);
+          al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255 / (2-is_front),255*congelou,255*jacquin), 2);
         } 
       }
     }
