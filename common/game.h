@@ -1,13 +1,13 @@
 #ifndef LIB_GAMELIB_H
 #define LIB_GAMELIB_H
 
-#define MAX_CHAT_CLIENTS 10
+#define MAX_CHAT_CLIENTS 5
 
 #define WIDTH 1366
 #define HEIGHT 768
 
-#define MAP_WIDTH 16
-#define MAP_HEIGHT 16
+#define MAP_WIDTH 32
+#define MAP_HEIGHT 32
 
 #define MAP_SCALE 50
 
@@ -15,6 +15,11 @@
 #define PLAYER_VIEW_DIST 100
 
 #define NUM_GELADEIRAS 5
+
+#define MAX_CONTA 1000
+#define CONTA_SCALE 5
+#define MAX_ELAPSED 5
+#define ELAPSED_SCALE 100
 
 typedef struct {
     float angle;
@@ -44,6 +49,8 @@ typedef struct {
     unsigned char ended; /* Já acabou o jogo? 0: não, 1: chefs: 2 jaquin */
     unsigned char started;
     unsigned char n_players;
+
+    float time; // Tempo em que a mensagem foi enviada
 } GameState;
 
 enum GameRenderState {
@@ -60,6 +67,7 @@ enum estadoDoJogo {
     nada,
     tela_vitoria,
     waiting_for_players,
+    abertura,
 };
 enum Hover {
     sairHover,

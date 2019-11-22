@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-
 #include <allegro5/allegro.h>
 
 #define MSG_MAX_SIZE 350
@@ -40,19 +39,14 @@ void hit_players(int id, float x, int y, float angle) {
         nx += cosf(angle)*step;
         ny += sinf(angle)*step;
         
-        for(int i=0;i<MAX_CHAT_CLIENTS;i++){    
-            if(isValidId(i) &&  i != id && i != state.jaquin) {
-                float px = state.players[i].playerState.x;
-                float py = state.players[i].playerState.y;
+        for(int target=0;target<MAX_CHAT_CLIENTS;target++){    
+            if(isValidId(target) &&  target != id && target != state.jaquin) {
+                float px = state.players[target].playerState.x;
+                float py = state.players[target].playerState.y;
                 if((nx-px)*(nx-px) + (ny-py)*(ny-py) < 100.0) {
-                    if(id != state.jaquin) {
-                        state.players[i].playerState.froze=0;
-                    }
+                    if(id==state.jaquin) state.players[target].playerState.froze=1;
+                    else state.players[target].playerState.froze=0;
 
-                    if(id == state.jaquin) {
-                        state.players[i].playerState.froze=1;
-                    }
-                    return;
                 }
             }
         }
@@ -101,6 +95,7 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new){
                    state.players[id].playerState.angle);
 
             if(!state.players[id].playerState.froze) {
+                puts("Freezing");
                 hit_players(id, state.players[id].playerState.x,
                 state.players[id].playerState.y,
                 state.players[id].playerState.angle);
@@ -119,7 +114,7 @@ unsigned char process_byte(int id, unsigned char prev, unsigned char new){
 
 
 int check_collision(float x, float y) {
-    if(x<0||y<0||x>WIDTH||y>HEIGHT||check_map_collision(x,y)) return 1;
+    if(x<0||y<0||check_map_collision(x,y)) return 1;
     return 0;
 }
 
@@ -127,7 +122,6 @@ int check_collision(float x, float y) {
 void update_players() {
     for(int i=0;i<MAX_CHAT_CLIENTS;i++){
         if(state.players[i].active){
-
 
           float spd=0.2,rotspd=0.002;
           float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
@@ -177,8 +171,21 @@ void init_client(int id) {
         state.players[id].active=1;
         state.players[id].keyboard=0;
 
-        state.players[id].playerState.x=WIDTH/2;
-        state.players[id].playerState.y=HEIGHT/2;
+        int mx = 0;
+        int my = 0;
+
+
+        do {
+            mx = rand()%MAP_WIDTH;
+            my = rand()%MAP_HEIGHT;
+        } while(GameMap[mx][my]!='.');
+
+
+        state.players[id].playerState.x=mx*MAP_SCALE;
+        state.players[id].playerState.y=mx*MAP_SCALE;
+
+        
+
         state.players[id].playerState.angle=0.0f;
         state.players[id].playerState.froze=0;
         
@@ -189,19 +196,20 @@ void update_game_state(double delta_time) {
     //printf("%g\n",state.conta);
 
     double K=5.0;
-    if(state.started) state.elapsed += delta_time;
-
-    for(int i=0;i<NUM_GELADEIRAS;i++){
-        if(state.geladeiras & (1<<i)){
-            state.conta += delta_time*K;
+    if(state.started) {
+        state.elapsed += delta_time;
+        for(int i=0;i<NUM_GELADEIRAS;i++){
+            if(state.geladeiras & (1<<i)){
+                state.conta += delta_time*K;
+            }
         }
     }
 
-    if(state.elapsed/60.0 > 30) {
+    if(state.elapsed/60.0 > MAX_ELAPSED) {
         state.ended = 1;
     }
 
-    if(state.conta > 50000) {
+    if(state.conta > MAX_CONTA) {
         state.ended = 2;
     }
 
@@ -229,12 +237,15 @@ int main() {
 
   while (1) {
 
+    
+    if(!state.started) {
     int id = acceptConnection();
-    if (id != NO_CONNECTION) {
-      recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
-      printf("%s logged in!\n", client_names[id]);
-      state.n_players++;
-      init_client(id);
+        if (id != NO_CONNECTION) {
+          recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
+          printf("%s logged in!\n", client_names[id]);
+          state.n_players++;
+          init_client(id);
+        }
     }
 
     unsigned char incoming_byte;
@@ -252,9 +263,11 @@ int main() {
              state.n_players--;
     }
 
-    update_players();
+    if(state.started) {
+        update_players();
+    }
     update_game_state(al_get_time()-prev_update_time);
-
+    
     if(al_get_time()-prev_broadcast_time > 0.05) {
       prev_broadcast_time=al_get_time();
 
