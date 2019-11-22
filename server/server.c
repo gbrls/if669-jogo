@@ -11,6 +11,8 @@
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
+#define PLAYER_SPEED 0.1
+#define PLAYER_ROT_SPEED 0.002
 
 GameState state;
 
@@ -123,17 +125,17 @@ void update_players() {
     for(int i=0;i<MAX_CHAT_CLIENTS;i++){
         if(state.players[i].active){
 
-          float spd=0.2,rotspd=0.002;
+          float spd = PLAYER_SPEED;
           float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
 
 
-            if(i==state.jaquin) spd/=5.0f;
+          if(i==state.jaquin) spd/=5.0f;
 
           if(state.players[i].keyboard&KEY_BYTE_L) {
-              state.players[i].playerState.angle -= rotspd;
+              state.players[i].playerState.angle -= PLAYER_ROT_SPEED;
           }
           if(state.players[i].keyboard&KEY_BYTE_R) {
-              state.players[i].playerState.angle += rotspd;
+              state.players[i].playerState.angle += PLAYER_ROT_SPEED;
           }
           if(state.players[i].keyboard&KEY_BYTE_U) {
               float ang= state.players[i].playerState.angle;
