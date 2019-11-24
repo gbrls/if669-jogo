@@ -13,6 +13,7 @@
 #define LOGIN_MAX_SIZE 13
 #define PLAYER_SPEED 0.1
 #define PLAYER_ROT_SPEED 0.002
+#define JAQUIN_SPEED_MUL 1.0
 
 GameState state;
 
@@ -129,7 +130,7 @@ void update_players() {
           float prevx=state.players[i].playerState.x,prevy=state.players[i].playerState.y;
 
 
-          if(i==state.jaquin) spd/=5.0f;
+          if(i==state.jaquin) spd/=JAQUIN_SPEED_MUL;
 
           if(state.players[i].keyboard&KEY_BYTE_L) {
               state.players[i].playerState.angle -= PLAYER_ROT_SPEED;
@@ -235,6 +236,7 @@ int main() {
   state.elapsed=0;
   state.started=0;
   state.n_players=0;
+  state.geladeiras=0xff;
   
 
   while (1) {
