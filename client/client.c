@@ -44,7 +44,7 @@ ALLEGRO_BITMAP *botao_contexto = NULL;
 ALLEGRO_BITMAP *botao_howPlay = NULL;
 
 enum GameRenderState game_render_state = GAME_MAP;
-enum estadoDoJogo state = abertura;
+enum estadoDoJogo state = menu;
 enum Hover hovermenu = nada;
 
 /* Não confundir a struct GameState com o enum estadoDoJogo.
@@ -310,17 +310,22 @@ void draw_map(GameState *state)
 
         al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
                                  (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(c, 255, 0));
-      } else if(GameMap[j][i] == '-') {
+      }
+      else if (GameMap[j][i] == '-')
+      {
         al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
                                  (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(100, 100, 200));
-      } else if(GameMap[j][i] == '*') {
+      }
+      else if (GameMap[j][i] == '*')
+      {
         al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
                                  (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(200, 100, 100));
-      }  else if(GameMap[j][i] == '+') {
+      }
+      else if (GameMap[j][i] == '+')
+      {
         al_draw_filled_rectangle(j * MAP_SCALE - offx, i * MAP_SCALE - offy,
                                  (j + 1) * MAP_SCALE - offx, (i + 1) * MAP_SCALE - offy, al_map_rgb(100, 200, 100));
       }
-
     }
   }
 
@@ -481,7 +486,7 @@ int main()
       fadein(logo, 5);
       al_rest(2.0);
       fadeout(5);
-      al_destroy_bitmap(logo);
+      // al_destroy_bitmap(logo);
 
       state = menu;
       break;
@@ -682,7 +687,8 @@ int main()
           if (evento.keyboard.keycode == ALLEGRO_KEY_ENTER)
           {
             //assertConnection();
-            if (tryConnect() == SERVER_UP) {
+            if (tryConnect() == SERVER_UP)
+            {
               state = waiting_for_players;
               char login[LOGIN_MAX_SIZE + 4];
 
@@ -694,7 +700,6 @@ int main()
               sendMsgToServer(login, len + 1);
               printf("IP: %s\n", str);
             }
-
           }
         }
       }
@@ -750,10 +755,9 @@ int main()
       char text[100];
 
       sprintf(text, "Esperando outros jogares (%d)...", (int)GState.n_players);
-
+  
       al_draw_text(font_op, al_map_rgb(255, 255, 255),
                    10, 0, 0, text);
-
 
       if (GState.jaquin == GState.id)
       {
@@ -765,7 +769,6 @@ int main()
       {
         state = jogar;
       }
-
 
       break;
     case jogar:
@@ -805,14 +808,14 @@ int main()
         rayCasting(px, py, dirX, dirY, planeX, planeY, &GState);
       }
 
-      al_draw_rectangle(5, 5, MAX_CONTA/(float)CONTA_SCALE, 10,
+      al_draw_rectangle(5, 5, MAX_CONTA / (float)CONTA_SCALE, 10,
                         al_map_rgb(150, 255, 150), 5);
-      al_draw_rectangle(5, 5, GState.conta/(float)CONTA_SCALE, 10,
+      al_draw_rectangle(5, 5, GState.conta / (float)CONTA_SCALE, 10,
                         al_map_rgb(100, 200, 100), 5);
 
-      al_draw_rectangle(5, 25, (MAX_ELAPSED*(float)ELAPSED_SCALE), 30,
+      al_draw_rectangle(5, 25, (MAX_ELAPSED * (float)ELAPSED_SCALE), 30,
                         al_map_rgb(255, 255, 200), 5);
-      al_draw_rectangle(5, 25, (GState.elapsed*(float)ELAPSED_SCALE)/60.0f, 30,
+      al_draw_rectangle(5, 25, (GState.elapsed * (float)ELAPSED_SCALE) / 60.0f, 30,
                         al_map_rgb(200, 200, 100), 5);
 
       char txt[50] = {};
