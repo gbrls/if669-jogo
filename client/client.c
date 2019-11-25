@@ -52,6 +52,7 @@ ALLEGRO_BITMAP *jaq_costa = NULL;
 ALLEGRO_BITMAP *jaq_frente = NULL;
 ALLEGRO_BITMAP *happy = NULL;
 ALLEGRO_BITMAP *sad = NULL;
+ALLEGRO_BITMAP *cuboGelo = NULL;
 
 enum GameRenderState game_render_state = GAME_RAYCAST;
 enum estadoDoJogo state = menu;
@@ -226,8 +227,9 @@ int inicializar()
   jaq_frente = al_load_bitmap("assets/img/jaq_frente.png");
   happy = al_load_bitmap("assets/img/happy.png");
   sad = al_load_bitmap("assets/img/sad.png");
+  cuboGelo = al_load_bitmap("assets/img/cuboGelo.png");
 
-  if (!background || !logo || !geloOne || !geloTwo || !play_costa || !play_frente || !jaq_frente || !jaq_costa)
+  if (!background || !logo || !geloOne || !geloTwo || !play_costa || !play_frente || !jaq_frente || !jaq_costa || !cuboGelo)
   {
     al_destroy_display(janela);
     al_destroy_font(font);
