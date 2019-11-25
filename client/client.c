@@ -833,7 +833,7 @@ int main()
         al_draw_filled_rectangle(0, HEIGHT / 2, WIDTH, HEIGHT,
                                  al_map_rgb(81, 37, 0));
 
-        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState, jaq_frente);
+        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState, play_frente,jaq_frente);
       }
 
       al_draw_rectangle(150, HEIGHT - 105, (MAX_CONTA / (float)CONTA_SCALE) + 150, HEIGHT - 100,
