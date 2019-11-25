@@ -50,6 +50,8 @@ ALLEGRO_BITMAP *play_costa = NULL;
 ALLEGRO_BITMAP *play_frente = NULL;
 ALLEGRO_BITMAP *jaq_costa = NULL;
 ALLEGRO_BITMAP *jaq_frente = NULL;
+ALLEGRO_BITMAP *happy = NULL;
+ALLEGRO_BITMAP *sad = NULL;
 
 enum GameRenderState game_render_state = GAME_RAYCAST;
 enum estadoDoJogo state = menu;
@@ -222,6 +224,8 @@ int inicializar()
   play_frente = al_load_bitmap("assets/img/play_frente.png");
   jaq_costa = al_load_bitmap("assets/img/jaq_costa.png");
   jaq_frente = al_load_bitmap("assets/img/jaq_frente.png");
+  happy = al_load_bitmap("assets/img/happy.png");
+  sad = al_load_bitmap("assets/img/sad.png");
 
   if (!background || !logo || !geloOne || !geloTwo || !play_costa || !play_frente || !jaq_frente || !jaq_costa)
   {
@@ -748,25 +752,29 @@ int main()
       if (GState.jaquin != GState.id && GState.ended == 1)
       {
         al_clear_to_color(al_map_rgb(0, 0, 255));
-        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
+        // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
+        al_draw_bitmap(happy, 0, 0, 0);
       }
 
       if (GState.jaquin == GState.id && GState.ended == 1)
       {
         al_clear_to_color(al_map_rgb(255, 0, 0));
-        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
+        // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
+        al_draw_bitmap(sad, 0, 0, 0);
       }
 
       if (GState.jaquin == GState.id && GState.ended == 2)
       {
         al_clear_to_color(al_map_rgb(0, 0, 255));
-        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
+        // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
+        al_draw_bitmap(happy, 0, 0, 0);
       }
 
       if (GState.jaquin != GState.id && GState.ended == 2)
       {
         al_clear_to_color(al_map_rgb(255, 0, 0));
         al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
+        al_draw_bitmap(sad, 0, 0, 0);
       }
 
       break;
