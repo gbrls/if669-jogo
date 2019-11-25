@@ -45,7 +45,12 @@ ALLEGRO_BITMAP *botao_sair = NULL;
 ALLEGRO_BITMAP *botao_jogar = NULL;
 ALLEGRO_BITMAP *botao_contexto = NULL;
 ALLEGRO_BITMAP *botao_howPlay = NULL;
+<<<<<<< HEAD
 ALLEGRO_BITMAP *botao_return = NULL;
+=======
+ALLEGRO_BITMAP *frente_chef = NULL;
+
+>>>>>>> 02572afc0da9cbc82d670041dde46c6569b169b1
 
 enum GameRenderState game_render_state = GAME_RAYCAST;
 enum estadoDoJogo state = menu;
@@ -211,9 +216,13 @@ int inicializar()
   printf("carregando imagens\n");
   background = al_load_bitmap("assets/img/menu.png");
   logo = al_load_bitmap("assets/img/menu.png");
+<<<<<<< HEAD
   geloOne = al_load_bitmap("assets/img/geloone.png");
   geloTwo = al_load_bitmap("assets/img/gelotwo.png");
   raio = al_load_bitmap("assets/img/raio.png");
+=======
+  frente_chef = al_load_bitmap("assets/img/frente_chef.png");
+>>>>>>> 02572afc0da9cbc82d670041dde46c6569b169b1
 
   if (!background || !logo || !geloOne || !geloTwo)
   {
@@ -259,6 +268,19 @@ int inicializar()
   // Alocamos o botão Como Jogar
   botao_howPlay = al_create_bitmap(280, 55);
   if (!botao_howPlay)
+  {
+    printf("Falha ao criar botão de Como jogar.\n");
+    al_destroy_display(janela);
+    al_destroy_font(font_op);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_bitmap(background);
+    al_destroy_bitmap(botao_jogar);
+    return -1;
+  }
+
+  frente_chef = al_create_bitmap(256, 274);
+  if (!frente_chef)
   {
     printf("Falha ao criar botão de Como jogar.\n");
     al_destroy_display(janela);
@@ -825,7 +847,7 @@ int main()
         al_draw_filled_rectangle(0, HEIGHT / 2, WIDTH, HEIGHT,
                                  al_map_rgb(81, 37, 0));
 
-        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState);
+        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState, background);
       }
 
       al_draw_rectangle(150, HEIGHT - 105, (MAX_CONTA / (float)CONTA_SCALE) + 150, HEIGHT - 100,

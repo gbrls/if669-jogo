@@ -1,10 +1,10 @@
-  #include <math.h>
+#include <math.h>
 #include "game.h"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <stdio.h>
 
-void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state){
+void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state, ALLEGRO_BITMAP* sprite) {
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
   float zbuffer[WIDTH]={0};
@@ -181,7 +181,14 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
       if(state->jaquin==i) jacquin = 1;
       for(int stripe = drawStartX; stripe < drawEndX; stripe++){
         if(transformY > 0 && stripe > 0 && stripe < WIDTH && transformY < zbuffer[stripe]){
-          al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255 / (2-is_front),255*congelou,255*jacquin), 2);
+
+          int d = (y) * 256 - HEIGHT * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
+          int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * WIDTH / spriteWidth) / 256;
+          int texY = ((d * 120) / spriteHeight) / 256;
+          //al_draw_bitmap_region(sprite,stripe,0,1,abs(drawStartY-drawEndY),stripe,drawStartY,0);
+          al_draw_scaled_bitmap(sprite, texX, 0, 1, 120,stripe,drawStartY,1,abs(drawStartY-drawEndY),0);
+          //al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255 / (2-is_front),255*congelou,255*jacquin), 2);
+
         } 
       }
     }
