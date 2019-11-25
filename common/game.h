@@ -16,9 +16,10 @@
 
 #define NUM_GELADEIRAS 5
 
-#define MAX_CONTA 1000
+#define MAX_CONTA 1000000
 #define CONTA_SCALE 5
-#define MAX_ELAPSED 5
+//#define MAX_ELAPSED 5
+#define MAX_ELAPSED 5000
 #define ELAPSED_SCALE 100
 
 typedef struct {
