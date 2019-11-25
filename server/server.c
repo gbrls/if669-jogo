@@ -12,7 +12,7 @@
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define PLAYER_SPEED 0.1
-#define PLAYER_ROT_SPEED 0.002
+#define PLAYER_ROT_SPEED 0.001
 #define JAQUIN_SPEED_MUL 1.0
 
 GameState state;

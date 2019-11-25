@@ -4,7 +4,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <stdio.h>
 
-void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state, ALLEGRO_BITMAP* chef,ALLEGRO_BITMAP* jaq) {
+void rayCasting(float x, float y, float dirX, float dirY, float planeX, float planeY, GameState* state, ALLEGRO_BITMAP* chef,ALLEGRO_BITMAP* jaq, ALLEGRO_BITMAP* gelo) {
   int xs, mapX, mapY, hit, side, stepX, stepY, lineHeight, drawStart, drawEnd;
   unsigned rgb[3];
   float zbuffer[WIDTH]={0};
@@ -186,7 +186,11 @@ void rayCasting(float x, float y, float dirX, float dirY, float planeX, float pl
           int texX = (int)(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * 100 / spriteWidth) / 256;
           int texY = ((d * 120) / spriteHeight) / 256;
           //al_draw_bitmap_region(sprite,stripe,0,1,abs(drawStartY-drawEndY),stripe,drawStartY,0);
-          al_draw_scaled_bitmap(jacquin?jaq:chef, texX, 0, 1, 120,stripe,drawStartY,1,abs(drawStartY-drawEndY),0);
+          if(state->players[i].playerState.froze) {
+            al_draw_scaled_bitmap(gelo, texX, 0, 1, 120,stripe,drawStartY,1,abs(drawStartY-drawEndY),0);
+          } else {
+            al_draw_scaled_bitmap(jacquin?jaq:chef, texX, 0, 1, 120,stripe,drawStartY,1,abs(drawStartY-drawEndY),0);
+          }
           //al_draw_line(stripe, drawStartY, stripe, drawEndY, al_map_rgb(255 / (2-is_front),255*congelou,255*jacquin), 2);
 
         } 
