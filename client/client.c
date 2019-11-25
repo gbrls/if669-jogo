@@ -56,6 +56,7 @@ ALLEGRO_BITMAP *happy = NULL;
 ALLEGRO_BITMAP *sad = NULL;
 ALLEGRO_BITMAP *cuboGelo = NULL;
 ALLEGRO_SAMPLE *sample=NULL;
+ALLEGRO_SAMPLE_INSTANCE *sampleInstance = NULL;
 
 enum GameRenderState game_render_state = GAME_RAYCAST;
 enum estadoDoJogo state = menu;
@@ -139,11 +140,12 @@ int inicializar()
      return -1;
   }
 
-  sample = al_load_sample("./Music/theme.wav");
+  sample = al_load_sample("Music/test.wav");
   if (!sample){
      printf("Audio clip sample not loaded!\n"); 
      return -1;
   }
+  al_play_sample(sample, 1.0, 0, 0, ALLEGRO_PLAYMODE_LOOP,NULL);
 	
   printf("Inicializando allegro primitivas\n");
   if (!al_init_primitives_addon())
@@ -516,7 +518,6 @@ int main()
 {
 
   srand(time(NULL));
-  al_play_sample(sample, 50.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
   //assertConnection();
 
   if (!inicializar())
@@ -526,6 +527,7 @@ int main()
   }
 
   printf("inicializado!");
+  al_play_sample(sample, 50.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
 
   while (1)
   {
