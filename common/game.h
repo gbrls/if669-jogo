@@ -73,6 +73,7 @@ enum estadoDoJogo
     tela_vitoria,
     waiting_for_players,
     abertura,
+    contexto_fundo,
 };
 enum Hover
 {
@@ -81,6 +82,7 @@ enum Hover
     contextoHover,
     howPlayHover,
     returnHover,
+    fundoHover,
 };
 
 extern unsigned char GameMap[MAP_WIDTH][MAP_HEIGHT];
