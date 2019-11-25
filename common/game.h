@@ -16,8 +16,8 @@
 
 #define NUM_GELADEIRAS 5
 
-#define MAX_CONTA 10000
-#define CONTA_SCALE 9
+#define MAX_CONTA 2000
+#define CONTA_SCALE 2
 #define MAX_ELAPSED 5
 #define ELAPSED_SCALE 100
 

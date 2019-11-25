@@ -737,8 +737,8 @@ int main()
       }
       /***************************************************************************************************************/
 
-      al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 503, HEIGHT - 333, ALLEGRO_ALIGN_LEFT, "Coloque o IP do servidor:");
-      al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 500, HEIGHT - 330, ALLEGRO_ALIGN_LEFT, "Coloque o IP do servidor:");
+      al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 503, HEIGHT - 333, ALLEGRO_ALIGN_LEFT, "Coloque o IP:");
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 500, HEIGHT - 330, ALLEGRO_ALIGN_LEFT, "Coloque o IP:");
 
       al_draw_text(font_ip, al_map_rgb(255, 255, 255), WIDTH - (strlen(str) * 15) - 333, HEIGHT - 233, ALLEGRO_ALIGN_LEFT, str);
       al_draw_text(font_ip, al_map_rgb(235, 10, 0), WIDTH - (strlen(str) * 15) - 330, HEIGHT - 230, ALLEGRO_ALIGN_LEFT, str);
@@ -773,20 +773,20 @@ int main()
       if (GState.jaquin != GState.id && GState.ended == 2)
       {
         al_clear_to_color(al_map_rgb(255, 0, 0));
-        al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
+        // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
         al_draw_bitmap(sad, 0, 0, 0);
       }
 
       break;
 
     case waiting_for_players:
+      get_events();
       if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
       {
         state = sair;
       }
       al_clear_to_color(al_map_rgb(0, 0, 255));
       recvMsgFromServer(&GState, DONT_WAIT);
-      get_events();
 
       char text[100];
 
@@ -798,7 +798,9 @@ int main()
       if (GState.jaquin == GState.id)
       {
         al_draw_text(font_op, al_map_rgb(255, 255, 0),
-                     150, 250, 0, "Voce é o jaquin! pressione espaço para continuar: (quando quiser)");
+                     150, 250, 0, "Tu controlas o jacquin!");
+        al_draw_text(font_op, al_map_rgb(255, 255, 0),
+                     150, 300, 0, "Pressione espace para continuar: (quando quiser)");
       }
 
       if (GState.started)
@@ -841,7 +843,7 @@ int main()
         al_draw_filled_rectangle(0, HEIGHT / 2, WIDTH, HEIGHT,
                                  al_map_rgb(81, 37, 0));
 
-        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState, play_frente,jaq_frente);
+        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState, play_frente, jaq_frente);
       }
 
       al_draw_rectangle(150, HEIGHT - 105, (MAX_CONTA / (float)CONTA_SCALE) + 150, HEIGHT - 100,
@@ -849,7 +851,7 @@ int main()
       al_draw_rectangle(150, HEIGHT - 105, (GState.conta / (float)CONTA_SCALE) + 150, HEIGHT - 100,
                         al_map_rgb(200, 200, 100), 5);
 
-      al_draw_bitmap(raio, 100, HEIGHT - 500, 0);
+      al_draw_bitmap(raio, 30, HEIGHT - 150, 0);
 
       // al_draw_rectangle(5, 25, (MAX_ELAPSED * (float)ELAPSED_SCALE), 30,
       //                   al_map_rgb(255, 255, 200), 5);
