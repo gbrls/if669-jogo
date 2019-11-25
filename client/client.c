@@ -31,6 +31,9 @@ ALLEGRO_MONITOR_INFO info;
 
 ALLEGRO_BITMAP *background = NULL;
 ALLEGRO_BITMAP *logo = NULL;
+ALLEGRO_BITMAP *geloOne = NULL;
+ALLEGRO_BITMAP *geloTwo = NULL;
+ALLEGRO_BITMAP *raio = NULL;
 
 ALLEGRO_FONT *font = NULL;
 ALLEGRO_FONT *font_ip = NULL;
@@ -42,8 +45,9 @@ ALLEGRO_BITMAP *botao_sair = NULL;
 ALLEGRO_BITMAP *botao_jogar = NULL;
 ALLEGRO_BITMAP *botao_contexto = NULL;
 ALLEGRO_BITMAP *botao_howPlay = NULL;
+ALLEGRO_BITMAP *botao_return = NULL;
 
-enum GameRenderState game_render_state = GAME_MAP;
+enum GameRenderState game_render_state = GAME_RAYCAST;
 enum estadoDoJogo state = menu;
 enum Hover hovermenu = nada;
 
@@ -207,14 +211,17 @@ int inicializar()
   printf("carregando imagens\n");
   background = al_load_bitmap("assets/img/menu.png");
   logo = al_load_bitmap("assets/img/menu.png");
+  geloOne = al_load_bitmap("assets/img/geloone.png");
+  geloTwo = al_load_bitmap("assets/img/gelotwo.png");
+  raio = al_load_bitmap("assets/img/raio.png");
 
-  if (!background || !logo)
+  if (!background || !logo || !geloOne || !geloTwo)
   {
     al_destroy_display(janela);
     al_destroy_font(font);
     al_destroy_font(font_ip);
     al_destroy_font(font_op);
-    printf("Erro ao carregar a imagem de background");
+    printf("Erro ao carregar a imagem");
     return -1;
   }
 
@@ -222,6 +229,19 @@ int inicializar()
   font = al_load_font("assets/fonts/PixelBreack.ttf", 100, 0);
   font_op = al_load_font("assets/fonts/PixelBreack.ttf", 50, 0);
   font_ip = al_load_font("assets/fonts/Symtext.ttf", 50, 0);
+
+  // Alocamos o botão return
+  botao_return = al_create_bitmap(140, 50);
+  if (!botao_return)
+  {
+    printf("Falha ao criar botão de return.\n");
+    al_destroy_display(janela);
+    al_destroy_font(font_op);
+    al_destroy_font(font);
+    al_destroy_font(font_ip);
+    al_destroy_bitmap(background);
+    return -1;
+  }
 
   // Alocamos o botão Jogar
   botao_jogar = al_create_bitmap(140, 60);
@@ -388,7 +408,7 @@ void get_events()
       ktype = KEYDOWN_TYPE;
       key = evento.keyboard.keycode;
 
-      if (key == ALLEGRO_KEY_ESCAPE)
+      if (key == ALLEGRO_KEY_ESCAPE && GState.id == GState.jaquin)
       {
         if (game_render_state == GAME_MAP)
         {
@@ -755,7 +775,7 @@ int main()
       char text[100];
 
       sprintf(text, "Esperando outros jogares (%d)...", (int)GState.n_players);
-  
+
       al_draw_text(font_op, al_map_rgb(255, 255, 255),
                    10, 0, 0, text);
 
@@ -808,29 +828,59 @@ int main()
         rayCasting(px, py, dirX, dirY, planeX, planeY, &GState);
       }
 
-      al_draw_rectangle(5, 5, MAX_CONTA / (float)CONTA_SCALE, 10,
-                        al_map_rgb(150, 255, 150), 5);
-      al_draw_rectangle(5, 5, GState.conta / (float)CONTA_SCALE, 10,
-                        al_map_rgb(100, 200, 100), 5);
-
-      al_draw_rectangle(5, 25, (MAX_ELAPSED * (float)ELAPSED_SCALE), 30,
-                        al_map_rgb(255, 255, 200), 5);
-      al_draw_rectangle(5, 25, (GState.elapsed * (float)ELAPSED_SCALE) / 60.0f, 30,
+      al_draw_rectangle(150, HEIGHT - 105, (MAX_CONTA / (float)CONTA_SCALE) + 150, HEIGHT - 100,
+                        al_map_rgb(220, 220, 200), 5);
+      al_draw_rectangle(150, HEIGHT - 105, (GState.conta / (float)CONTA_SCALE) + 150, HEIGHT - 100,
                         al_map_rgb(200, 200, 100), 5);
 
+      al_draw_bitmap(raio, 100, HEIGHT - 500, 0);
+
+      // al_draw_rectangle(5, 25, (MAX_ELAPSED * (float)ELAPSED_SCALE), 30,
+      //                   al_map_rgb(255, 255, 200), 5);
+      // al_draw_rectangle(5, 25, (GState.elapsed * (float)ELAPSED_SCALE) / 60.0f, 30,
+      //                   al_map_rgb(200, 200, 100), 5);
+
       char txt[50] = {};
-      sprintf(txt, "%G", GState.conta);
-      al_draw_text(font_ip, al_map_rgb(50, 50, 50), 5, 35, 0, txt);
-      sprintf(txt, "%d:%02d", (int)(GState.elapsed / 60.0), (int)(GState.elapsed) % 60);
-      al_draw_text(font_ip, al_map_rgb(50, 50, 50), 5, 75, 0, txt);
+      // sprintf(txt, "%G", GState.conta);
+      // al_draw_text(font_ip, al_map_rgb(50, 50, 50), 5, 35, 0, txt);
+      sprintf(txt, "%d:%02d", (int)(((MAX_ELAPSED * 60) - GState.elapsed) / 60.0), (int)((MAX_ELAPSED * 60) - GState.elapsed) % 60);
+      al_draw_text(font_ip, al_map_rgb(0, 0, 0), WIDTH / 2, 20, ALLEGRO_ALIGN_CENTER, txt);
+      al_draw_text(font_ip, al_map_rgb(255, 255, 255), WIDTH / 2 - 3, 20 - 3, ALLEGRO_ALIGN_CENTER, txt);
 
       if (GState.players[GState.id].playerState.froze)
       {
-        al_draw_text(font_ip, al_map_rgb(50, 200, 200), 200, 75, 0, "Congelou!");
+        al_draw_text(font_ip, al_map_rgb(50, 200, 200), WIDTH / 2, HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "Congelou!");
+        al_draw_text(font_ip, al_map_rgb(255, 255, 255), WIDTH / 2 - 3, HEIGHT / 2 - 3, ALLEGRO_ALIGN_CENTER, "Congelou!");
+
+        al_draw_bitmap(geloOne, WIDTH - 300, HEIGHT / 2, 0);
+        al_draw_bitmap(geloTwo, WIDTH / 2 - 300, HEIGHT / 2 - 200, 0);
+
+        al_draw_bitmap(geloOne, WIDTH / 3 - 300, HEIGHT / 3, 0);
+        al_draw_bitmap(geloTwo, WIDTH - 400, HEIGHT / 3 - 200, 0);
+
+        al_draw_bitmap(geloOne, 300, HEIGHT - 200, 0);
       }
 
       break;
     case HowPlay:
+      al_clear_to_color(al_map_rgb(196, 195, 178));
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 100, ALLEGRO_ALIGN_LEFT, "   O primeiro jogador a se conectar será o jacquin.");
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 180, ALLEGRO_ALIGN_LEFT, "   O jacquin deve deixar as geladeiras ligadas e tem o");
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 220, ALLEGRO_ALIGN_LEFT, "poder de congelar os outros jogadores.");
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 300, ALLEGRO_ALIGN_LEFT, "   Os outros jogadores (chefs) devem  desligar as");
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 350, ALLEGRO_ALIGN_LEFT, "geladeiras para vencerem.");
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 430, ALLEGRO_ALIGN_LEFT, "   Use ESC para alternar entre 1a e 3a pessoa");
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 480, ALLEGRO_ALIGN_LEFT, "(apenas funciona no jacquin).");
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 560, ALLEGRO_ALIGN_LEFT, "   Use as setas para controlar os jogadores");
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), 100, 640, ALLEGRO_ALIGN_LEFT, "   Use a barra de espaço como tecla de ataque");
+
       while (!al_is_event_queue_empty(fila_eventos))
       {
 
@@ -839,10 +889,51 @@ int main()
         {
           state = sair;
         }
+
+        if (evento.type == ALLEGRO_EVENT_MOUSE_AXES)
+        {
+          // Hover no botao Jogar
+          if ((mouse_X * evento.mouse.x) >= 23 &&
+              (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) >= 23)
+          {
+            hovermenu = returnHover;
+          }
+          else
+          {
+            hovermenu = jogarHover;
+          }
+        }
+        else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
+        {
+          // clicou no botão jogar
+          if ((mouse_X * evento.mouse.x) >= 23 &&
+              (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) >= 23)
+          {
+            state = menu;
+          }
+        }
       }
-      al_clear_to_color(al_map_rgb(0, 255, 0));
+      if (hovermenu != returnHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
+      }
+      else if (hovermenu == returnHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
+      }
       break;
     case contexto:
+
+      al_clear_to_color(al_map_rgb(255, 255, 0));
+
+      al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 500, HEIGHT - 330, ALLEGRO_ALIGN_LEFT, "POORAA");
+
       while (!al_is_event_queue_empty(fila_eventos))
       {
 
@@ -851,8 +942,45 @@ int main()
         {
           state = sair;
         }
+
+        if (evento.type == ALLEGRO_EVENT_MOUSE_AXES)
+        {
+          // Hover no botao Jogar
+          if ((mouse_X * evento.mouse.x) >= 23 &&
+              (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) >= 23)
+          {
+            hovermenu = returnHover;
+          }
+          else
+          {
+            hovermenu = jogarHover;
+          }
+        }
+        else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
+        {
+          // clicou no botão jogar
+          if ((mouse_X * evento.mouse.x) >= 23 &&
+              (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 23 &&
+              (mouse_Y * evento.mouse.y) >= 23)
+          {
+            state = menu;
+          }
+        }
       }
-      al_clear_to_color(al_map_rgb(255, 0, 0));
+      if (hovermenu != returnHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
+      }
+      else if (hovermenu == returnHover)
+      {
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
+      }
+
       break;
     case sair:
       // Desaloca os recursos utilizados na aplicação
