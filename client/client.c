@@ -14,6 +14,8 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
@@ -53,6 +55,7 @@ ALLEGRO_BITMAP *jaq_frente = NULL;
 ALLEGRO_BITMAP *happy = NULL;
 ALLEGRO_BITMAP *sad = NULL;
 ALLEGRO_BITMAP *cuboGelo = NULL;
+ALLEGRO_SAMPLE *sample=NULL;
 
 enum GameRenderState game_render_state = GAME_RAYCAST;
 enum estadoDoJogo state = menu;
@@ -127,6 +130,21 @@ int inicializar()
     printf("Falha ao abrir biblioteca allegro\n");
     return 0;
   }
+  if(!al_install_audio()){
+     fprintf(stderr, "failed to initialize audio!\n");
+     return -1;
+  }
+  if(!al_init_acodec_addon()){
+     fprintf(stderr, "failed to initialize audio codecs!\n");
+     return -1;
+  }
+
+  sample = al_load_sample("./Music/theme.wav");
+  if (!sample){
+     printf("Audio clip sample not loaded!\n"); 
+     return -1;
+  }
+	
   printf("Inicializando allegro primitivas\n");
   if (!al_init_primitives_addon())
   {
@@ -498,6 +516,7 @@ int main()
 {
 
   srand(time(NULL));
+  al_play_sample(sample, 50.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
   //assertConnection();
 
   if (!inicializar())
@@ -1015,6 +1034,7 @@ int main()
       al_destroy_bitmap(botao_jogar);
       al_destroy_bitmap(botao_howPlay);
       al_destroy_bitmap(botao_contexto);
+      al_destroy_sample(sample);
       al_destroy_bitmap(botao_sair);
 
       return 0;
