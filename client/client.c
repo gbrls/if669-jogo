@@ -137,13 +137,18 @@ int inicializar()
   }
   if (!al_install_audio())
   {
-    fprintf(stderr, "failed to initialize audio!\n");
+    printf("failed to initialize audio!\n");
     return -1;
   }
   if (!al_init_acodec_addon())
   {
-    fprintf(stderr, "failed to initialize audio codecs!\n");
+    printf("failed to initialize audio codecs!\n");
     return -1;
+  }
+  if (!al_reserve_samples(1))
+  {
+    printf("Falha ao reservar amostrar de audio");
+    return 0;
   }
 
   sample = al_load_sample("assets/Music/theme.wav");
@@ -563,7 +568,7 @@ int main()
       break;
     case menu:
 
-      al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+      al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
 
       //printf("Menu\n");
 
