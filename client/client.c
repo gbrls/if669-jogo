@@ -60,6 +60,7 @@ ALLEGRO_BITMAP *comoJogar = NULL;
 ALLEGRO_BITMAP *lenda = NULL;
 ALLEGRO_BITMAP *lenda_fundo = NULL;
 ALLEGRO_SAMPLE *sample = NULL;
+ALLEGRO_BITMAP *icon = NULL;
 // ALLEGRO_SAMPLE_INSTANCE *sampleInstance = NULL;
 
 enum GameRenderState game_render_state = GAME_RAYCAST;
@@ -262,6 +263,7 @@ int inicializar()
   lenda = al_load_bitmap("assets/img/lenda.png");
   lenda_fundo = al_load_bitmap("assets/img/fundo-lenda.png");
   comoJogar = al_load_bitmap("assets/img/comoJogar.png");
+  icon = al_load_bitmap("assets/img/icon.png");
 
   if (!background || !logo || !geloOne || !geloTwo || !play_costa || !play_frente || !jaq_frente || !jaq_costa || !cuboGelo)
   {
@@ -363,6 +365,7 @@ int inicializar()
   }
 
   al_set_window_title(janela, "Jacquin's Hell");
+  al_set_display_icon(janela, icon);
 
   return 1;
 }
@@ -573,9 +576,6 @@ int main()
       //printf("Menu\n");
 
       /***************************************************************************************************************/
-      // colore o fundo
-      al_clear_to_color(al_map_rgb(255, 255, 255));
-
       /***************************************************************************************************************/
 
       // background
@@ -720,14 +720,6 @@ int main()
       }
       break;
     case jogar_IP:
-
-      /***************************************************************************************************************/
-
-      // colore o fundo
-      al_clear_to_color(al_map_rgb(255, 255, 255));
-
-      /***************************************************************************************************************/
-
       // background
       al_draw_bitmap(background, 0, 0, 0);
 
@@ -798,28 +790,28 @@ int main()
       }
       if (GState.jaquin != GState.id && GState.ended == 1)
       {
-        al_clear_to_color(al_map_rgb(0, 0, 255));
+        // al_clear_to_color(al_map_rgb(0, 0, 255));
         // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
         al_draw_bitmap(happy, 0, 0, 0);
       }
 
       if (GState.jaquin == GState.id && GState.ended == 1)
       {
-        al_clear_to_color(al_map_rgb(255, 0, 0));
+        // al_clear_to_color(al_map_rgb(255, 0, 0));
         // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
         al_draw_bitmap(sad, 0, 0, 0);
       }
 
       if (GState.jaquin == GState.id && GState.ended == 2)
       {
-        al_clear_to_color(al_map_rgb(0, 0, 255));
+        // al_clear_to_color(al_map_rgb(0, 0, 255));
         // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce ganhou!");
         al_draw_bitmap(happy, 0, 0, 0);
       }
 
       if (GState.jaquin != GState.id && GState.ended == 2)
       {
-        al_clear_to_color(al_map_rgb(255, 0, 0));
+        // al_clear_to_color(al_map_rgb(255, 0, 0));
         // al_draw_text(font_ip, al_map_rgb(255, 255, 255), 5, 5, 0, "Voce perdeu!");
         al_draw_bitmap(sad, 0, 0, 0);
       }
@@ -928,7 +920,6 @@ int main()
 
       break;
     case HowPlay:
-      al_clear_to_color(al_map_rgb(196, 195, 178));
 
       al_draw_bitmap(comoJogar, 0, 0, 0);
 
@@ -981,8 +972,6 @@ int main()
       break;
     case contexto:
 
-      al_clear_to_color(al_map_rgb(255, 255, 0));
-
       al_draw_bitmap(lenda, 0, 0, 0);
 
       while (!al_is_event_queue_empty(fila_eventos))
@@ -998,22 +987,10 @@ int main()
         {
           if ((mouse_X * evento.mouse.x) >= 23 &&
               (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 23 &&
-              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 23 &&
-              (mouse_Y * evento.mouse.y) >= 23)
+              (mouse_Y * evento.mouse.y) <= HEIGHT &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - 70)
           {
             hovermenu = returnHover;
-          }
-          else
-          {
-            hovermenu = jogarHover;
-          }
-
-          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_fundo) - 63 &&
-              (mouse_X * evento.mouse.x) <= WIDTH - 63 &&
-              (mouse_Y * evento.mouse.y) <= HEIGHT - 63 &&
-              (mouse_Y * evento.mouse.y) >= HEIGHT - 63 - al_get_bitmap_height(botao_fundo))
-          {
-            hovermenu = fundoHover;
           }
           else
           {
@@ -1025,16 +1002,15 @@ int main()
           // clicou no botão jogar
           if ((mouse_X * evento.mouse.x) >= 23 &&
               (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 23 &&
-              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 23 &&
-              (mouse_Y * evento.mouse.y) >= 23)
+              (mouse_Y * evento.mouse.y) <= HEIGHT &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - 60)
           {
             state = menu;
           }
-
-          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_fundo) - 63 &&
-              (mouse_X * evento.mouse.x) <= WIDTH - 63 &&
-              (mouse_Y * evento.mouse.y) <= HEIGHT - 63 &&
-              (mouse_Y * evento.mouse.y) >= HEIGHT - 63 - al_get_bitmap_height(botao_fundo))
+          if ((mouse_X * evento.mouse.x) >= 23 &&
+              (mouse_X * evento.mouse.x) <= WIDTH &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT - 60 &&
+              (mouse_Y * evento.mouse.y) >= 0)
           {
             state = contexto_fundo;
           }
@@ -1042,28 +1018,16 @@ int main()
       }
       if (hovermenu != returnHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
-        al_draw_text(font_op, al_map_rgb(235, 10, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, HEIGHT - 63, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), 20, HEIGHT - 60, ALLEGRO_ALIGN_LEFT, "Voltar");
       }
       else if (hovermenu == returnHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, HEIGHT - 63, ALLEGRO_ALIGN_LEFT, "Voltar");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), 20, HEIGHT - 60, ALLEGRO_ALIGN_LEFT, "Voltar");
       }
-      if (hovermenu != fundoHover)
-      {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 63, HEIGHT - 63, ALLEGRO_ALIGN_LEFT, "Fundo");
-        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 60, HEIGHT - 60, ALLEGRO_ALIGN_LEFT, "Fundo");
-      }
-      else if (hovermenu == fundoHover)
-      {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 63, HEIGHT - 63, ALLEGRO_ALIGN_LEFT, "Fundo");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - 60, HEIGHT - 60, ALLEGRO_ALIGN_LEFT, "Fundo");
-      }
-
       break;
     case contexto_fundo:
-      al_clear_to_color(al_map_rgb(255, 255, 0));
 
       al_draw_bitmap(lenda_fundo, 0, 0, 0);
 
@@ -1078,22 +1042,11 @@ int main()
 
         if (evento.type == ALLEGRO_EVENT_MOUSE_AXES)
         {
-          if ((mouse_X * evento.mouse.x) >= 63 &&
-              (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 63 &&
-              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 63 &&
-              (mouse_Y * evento.mouse.y) >= 63)
-          {
-            hovermenu = returnHover;
-          }
-          else
-          {
-            hovermenu = jogarHover;
-          }
 
-          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_fundo) - 63 &&
-              (mouse_X * evento.mouse.x) <= WIDTH - 63 &&
-              (mouse_Y * evento.mouse.y) <= HEIGHT - 63 &&
-              (mouse_Y * evento.mouse.y) >= HEIGHT - 63 - al_get_bitmap_height(botao_fundo))
+          if ((mouse_X * evento.mouse.x) >= WIDTH - 203 &&
+              (mouse_X * evento.mouse.x) <= WIDTH &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - 83)
           {
             hovermenu = fundoHover;
           }
@@ -1104,42 +1057,24 @@ int main()
         }
         else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP)
         {
-          if ((mouse_X * evento.mouse.x) >= 23 &&
-              (mouse_X * evento.mouse.x) <= al_get_bitmap_width(botao_return) + 23 &&
-              (mouse_Y * evento.mouse.y) <= al_get_bitmap_height(botao_return) + 23 &&
-              (mouse_Y * evento.mouse.y) >= 23)
-          {
-            state = contexto;
-          }
-
-          if ((mouse_X * evento.mouse.x) >= WIDTH - al_get_bitmap_width(botao_fundo) - 63 &&
-              (mouse_X * evento.mouse.x) <= WIDTH - 63 &&
-              (mouse_Y * evento.mouse.y) <= HEIGHT - 63 &&
-              (mouse_Y * evento.mouse.y) >= HEIGHT - 63 - al_get_bitmap_height(botao_fundo))
+          if ((mouse_X * evento.mouse.x) >= WIDTH - 203 &&
+              (mouse_X * evento.mouse.x) <= WIDTH &&
+              (mouse_Y * evento.mouse.y) <= HEIGHT &&
+              (mouse_Y * evento.mouse.y) >= HEIGHT - 83)
           {
             state = contexto;
           }
         }
       }
-      if (hovermenu != returnHover)
-      {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
-        al_draw_text(font_op, al_map_rgb(235, 10, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
-      }
-      else if (hovermenu == returnHover)
-      {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), 23, 23, ALLEGRO_ALIGN_LEFT, "Voltar");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), 20, 20, ALLEGRO_ALIGN_LEFT, "Voltar");
-      }
       if (hovermenu != fundoHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 63, HEIGHT - 63, ALLEGRO_ALIGN_LEFT, "Fundo");
-        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 60, HEIGHT - 60, ALLEGRO_ALIGN_LEFT, "Fundo");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 203, HEIGHT - 83, ALLEGRO_ALIGN_LEFT, "Fundo");
+        al_draw_text(font_op, al_map_rgb(235, 10, 0), WIDTH - 200, HEIGHT - 80, ALLEGRO_ALIGN_LEFT, "Fundo");
       }
       else if (hovermenu == fundoHover)
       {
-        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 63, HEIGHT - 63, ALLEGRO_ALIGN_LEFT, "Fundo");
-        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - 60, HEIGHT - 60, ALLEGRO_ALIGN_LEFT, "Fundo");
+        al_draw_text(font_op, al_map_rgb(255, 255, 255), WIDTH - 203, HEIGHT - 83, ALLEGRO_ALIGN_LEFT, "Fundo");
+        al_draw_text(font_op, al_map_rgb(150, 0, 0), WIDTH - 200, HEIGHT - 80, ALLEGRO_ALIGN_LEFT, "Fundo");
       }
 
       break;
