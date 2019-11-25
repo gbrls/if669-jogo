@@ -53,14 +53,14 @@ ALLEGRO_BITMAP *play_costa = NULL;
 ALLEGRO_BITMAP *play_frente = NULL;
 ALLEGRO_BITMAP *jaq_costa = NULL;
 ALLEGRO_BITMAP *jaq_frente = NULL;
-ALLEGRO_BITMAP *happy = NULL; 
+ALLEGRO_BITMAP *happy = NULL;
 ALLEGRO_BITMAP *sad = NULL;
 ALLEGRO_BITMAP *cuboGelo = NULL;
 ALLEGRO_BITMAP *comoJogar = NULL;
 ALLEGRO_BITMAP *lenda = NULL;
 ALLEGRO_BITMAP *lenda_fundo = NULL;
-ALLEGRO_SAMPLE *sample=NULL;
-ALLEGRO_SAMPLE_INSTANCE *sampleInstance = NULL;
+ALLEGRO_SAMPLE *sample = NULL;
+// ALLEGRO_SAMPLE_INSTANCE *sampleInstance = NULL;
 
 enum GameRenderState game_render_state = GAME_RAYCAST;
 enum estadoDoJogo state = abertura;
@@ -135,22 +135,24 @@ int inicializar()
     printf("Falha ao abrir biblioteca allegro\n");
     return 0;
   }
-  if(!al_install_audio()){
-     fprintf(stderr, "failed to initialize audio!\n");
-     return -1;
+  if (!al_install_audio())
+  {
+    fprintf(stderr, "failed to initialize audio!\n");
+    return -1;
   }
-  if(!al_init_acodec_addon()){
-     fprintf(stderr, "failed to initialize audio codecs!\n");
-     return -1;
+  if (!al_init_acodec_addon())
+  {
+    fprintf(stderr, "failed to initialize audio codecs!\n");
+    return -1;
   }
 
-  sample = al_load_sample("Music/test.wav");
-  if (!sample){
-     printf("Audio clip sample not loaded!\n"); 
-     return -1;
+  sample = al_load_sample("assets/Music/theme.wav");
+  if (!sample)
+  {
+    printf("Audio clip sample not loaded!\n");
+    return -1;
   }
-  al_play_sample(sample, 1.0, 0, 0, ALLEGRO_PLAYMODE_LOOP,NULL);
-	
+
   printf("Inicializando allegro primitivas\n");
   if (!al_init_primitives_addon())
   {
@@ -547,7 +549,6 @@ int main()
   }
 
   printf("inicializado!");
-  al_play_sample(sample, 50.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
 
   while (1)
   {
@@ -561,6 +562,8 @@ int main()
       state = menu;
       break;
     case menu:
+
+      al_play_sample(sample, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
       //printf("Menu\n");
 
@@ -882,7 +885,7 @@ int main()
         al_draw_filled_rectangle(0, HEIGHT / 2, WIDTH, HEIGHT,
                                  al_map_rgb(81, 37, 0));
 
-        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState, play_frente, jaq_frente,cuboGelo);
+        rayCasting(px, py, dirX, dirY, planeX, planeY, &GState, play_frente, jaq_frente, cuboGelo);
       }
 
       al_draw_rectangle(150, HEIGHT - 105, (MAX_CONTA / (float)CONTA_SCALE) + 150, HEIGHT - 100,
