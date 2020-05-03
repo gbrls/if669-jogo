@@ -1,5 +1,5 @@
 # if669-jogo
-[Dcto](https://docs.google.com/document/d/1GUkAA6Tv_SgV5HuBIBtLkdRdiGoB3Gxj1L-__42aXpQ/edit)
+[Documento explicando as coisas.](https://docs.google.com/document/d/1GUkAA6Tv_SgV5HuBIBtLkdRdiGoB3Gxj1L-__42aXpQ/edit)
 
 # Screenshots
 ![1](./jogo-1.jpg)
