@@ -1,6 +1,12 @@
 # if669-jogo
 [Dcto](https://docs.google.com/document/d/1GUkAA6Tv_SgV5HuBIBtLkdRdiGoB3Gxj1L-__42aXpQ/edit)
 
+# Screenshots
+![1](./jogo-1.jpg)
+![2](./jogo-2.jpg)
+![3](./jogo-3.jpg)
+![4](./jogo-4.jpg)
+
 # TODO/Coisas para fazer
 - Implementar as texturas.
 - Som.
