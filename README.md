@@ -1,7 +1,7 @@
 # if669-jogo
 [Documento explicando as coisas.](https://docs.google.com/document/d/1GUkAA6Tv_SgV5HuBIBtLkdRdiGoB3Gxj1L-__42aXpQ/edit)  
 Projeto criado por [Ricardo Morato](https://github.com/RicardoMorato), [Gabriel Schneider](https://github.com/gbrls),
-Gabriel Gadelha, Gleibson Rozendo, [Leonardo Moreira](https://github.com/lgmo) e [Vituriano Xisto](https://github.com/vituriano) com a monitoria de [Samuel Simões](https://github.com/SamuelSimoes31).  
+Gabriel Gadelha, Gleibson Rozendo, [Leonardo Moreira](https://github.com/lgmo) e [Vituriano Xisto](https://github.com/vituriano) sob a monitoria de [Samuel Simões](https://github.com/SamuelSimoes31).  
 Música por [Mateus Ferreira](https://github.com/MateusfbSoares).
 
 # Screenshots
