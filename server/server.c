@@ -226,6 +226,7 @@ int main() {
   char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
   char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
 
+  al_init();
 
   serverInit(MAX_CHAT_CLIENTS);
   puts("Server is running!!");
